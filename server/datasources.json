@@ -1,0 +1,11 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "customerMicroServiceDs": {
+    "name": "customerMicroServiceDs",
+    "connector": "swagger",
+    "spec": "http://localhost:4001/explorer/swagger.json"
+  }
+}

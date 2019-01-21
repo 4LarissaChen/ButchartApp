@@ -1,0 +1,13 @@
+{
+  "name": "SendMessageResponse",
+  "idInjection": false,
+  "base": "Model",
+  "strict": true,
+  "properties": {
+    "id": false,
+    "code": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

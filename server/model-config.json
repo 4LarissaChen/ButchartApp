@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models",
+      "../common/models/apimodel/workspace",
+      "../common/models/datamodel",
+      "../common/models/apimodel/workspace/apiSpec/sendMessage/response"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+
+  "ACL": {
+    "dataSource": "db",
+    "public": false
+  },
+  
+  "CustomerMicroService": {
+    "dataSource": "customerMicroServiceDs",
+    "public": false
+  },
+  
+  "SendMessageResponse": {
+    "dataSource": "db",
+    "public": false
+  },
+
+  "WorkspaceFacadeAPI": {
+    "dataSource": "db",
+    "public": true
+  }
+}

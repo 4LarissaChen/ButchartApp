@@ -1,0 +1,21 @@
+{
+  "name": "WorkspaceFacadeAPI",
+  "base": "Model",
+  "idInjection": true,
+  "strict": true,
+  "options": {
+    "validateUpdate": true
+  },
+  "properties": {
+    "_id": {
+      "type": "string",
+      "id": false,
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "mixins": {}
+}
