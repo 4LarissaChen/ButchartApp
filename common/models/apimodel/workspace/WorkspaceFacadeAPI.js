@@ -1,8 +1,9 @@
 'use strict'
 var app = require('../../../../server/server.js');
+var loopback = require('loopback');
+var nodeUtil = require('util');
 var moment = require('moment');
 var Promise = require('bluebird');
-var loopback = require('loopback');
 
 var apiUtils = require('../../../../server/utils/apiUtils.js');
 
@@ -13,8 +14,8 @@ module.exports = function (WorkspaceFacadeAPI) {
     description: "Customer login.",
     accepts: [{ arg: 'tel', type: 'string', required: true, description: "User telephone number", http: { source: 'query' } },
     { arg: 'code', type: 'string', required: true, description: "Verification code", http: { source: 'query' } }],
-    return: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
-    http: { path: '/customer/login', verb: 'post', status: 200, errorStatus: [500] }
+    returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
+    http: { path: '/workspace/login', verb: 'post', status: 200, errorStatus: 500 }
   });
 
   WorkspaceFacadeAPI.login = function (tel, code, cb) {
@@ -30,8 +31,8 @@ module.exports = function (WorkspaceFacadeAPI) {
     description: "Get message verification code.",
     accepts: [{ arg: 'tel', type: 'string', required: true, description: "User telephone number", http: { source: 'path' } },
     { arg: 'operation', type: 'string', required: true, description: "login/register/changePwd/idVerification", http: { source: 'query' } }],
-    return: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
-    http: { path: '/customer/sendMessage/:tel', verb: 'put', status: 200, errorStatus: [500] }
+    returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
+    http: { path: '/workspace/sendMessage/:tel', verb: 'put', status: 200, errorStatus: 500 }
   });
   WorkspaceFacadeAPI.sendMessage = function (tel, operation, cb) {
     var CustomerMicroService = loopback.findModel("CustomerMicroService");
