@@ -1,0 +1,29 @@
+{
+  "name": "CreateOrderRequest",
+  "idInjection": false,
+  "base": "Model",
+  "strict": true,
+  "properties": {
+    "id": false,
+    "productList": {
+      "type": ["string"],
+      "required": true
+    },
+    "addressId": {
+      "type": "string",
+      "required": true
+    },
+    "storeId": {
+      "type": "string",
+      "required": true
+    },
+    "totalPrice": {
+      "type": "string",
+      "required": true
+    },
+    "freight": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

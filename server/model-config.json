@@ -26,6 +26,11 @@
     "dataSource": "customerMicroServiceDs",
     "public": false
   },
+  "OrderMicroService": {
+    "dataSource": "orderMicroServiceDs",
+    "public": false
+  },
+  
   
   "SendMessageResponse": {
     "dataSource": "db",
