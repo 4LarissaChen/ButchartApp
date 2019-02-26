@@ -1,0 +1,30 @@
+{
+  "name": "SearchTransactionRequest",
+  "base": "Model",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": false,
+    "customerId": {
+      "type": "string"
+    },
+    "storeId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "fromDate": {
+      "type": "string"
+    },
+    "toDate": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
