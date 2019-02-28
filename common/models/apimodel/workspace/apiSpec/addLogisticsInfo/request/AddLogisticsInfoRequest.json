@@ -1,34 +1,22 @@
 {
-	"name": "Address",
+	"name": "AddLogisticsInfoRequest",
 	"base": "Model",
-	"strict": true,
 	"idInjection": false,
 	"options": {
 		"validateUpsert": true
 	},
 	"properties": {
 		"id": false,
-		"_id": {
+		"logisticsId": {
 			"type": "string",
 			"required": true
 		},
-		"customerId": {
+		"trackingId": {
 			"type": "string",
 			"required": true
 		},
-		"address": {
-			"type": "string",
-			"required": true
-		},
-		"tel": {
-			"type": "string",
-			"required": true
-		},
-		"postcode": {
+		"logisticsCompany": {
 			"type": "string"
-		},
-		"isDefault": {
-			"type": "boolean"
 		}
 	},
 	"validations": [],

@@ -1,18 +1,30 @@
 {
-	"name": "Address",
+	"name": "Transaction",
 	"base": "Model",
 	"strict": true,
-	"idInjection": false,
+	"idInjection": true,
 	"options": {
 		"validateUpsert": true
 	},
 	"properties": {
-		"id": false,
 		"_id": {
 			"type": "string",
+			"id": true,
 			"required": true
 		},
 		"customerId": {
+			"type": "string",
+			"required": true
+		},
+		"orderId": {
+			"type": "string",
+			"required": true
+		},
+		"status": {
+			"type": "string",
+			"required": true
+		},
+		"createDate": {
 			"type": "string",
 			"required": true
 		},
@@ -20,15 +32,8 @@
 			"type": "string",
 			"required": true
 		},
-		"tel": {
-			"type": "string",
-			"required": true
-		},
-		"postcode": {
+		"payedDate": {
 			"type": "string"
-		},
-		"isDefault": {
-			"type": "boolean"
 		}
 	},
 	"validations": [],

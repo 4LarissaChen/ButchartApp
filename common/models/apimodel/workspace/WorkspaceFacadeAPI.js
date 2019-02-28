@@ -43,25 +43,27 @@ module.exports = function (WorkspaceFacadeAPI) {
     })
   }
 
-  WorkspaceFacadeAPI.remoteMethod('createOrder', {
+  WorkspaceFacadeAPI.remoteMethod('createTransaction', {
     description: "Create an order.",
     accepts: [{ arg: 'customerId', type: 'string', required: true, description: "Customer Id.", http: { source: 'path' } },
-    { arg: 'orderParams', type: 'CreateOrderRequest', required: true, description: "detail order properties", http: { source: 'body' } }],
+    { arg: 'orderParams', type: 'CreateTransactionRequest', required: true, description: "detail order properties", http: { source: 'body' } }],
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
-    http: { path: '/workspace/customerId/:customerId/createOrder', verb: 'put', status: 200, errorStatus: 500 }
+    http: { path: '/workspace/customerId/:customerId/createTransaction', verb: 'put', status: 200, errorStatus: 500 }
   });
 
-  WorkspaceFacadeAPI.createOrder = function (customerId, orderParams, cb) {
+  WorkspaceFacadeAPI.createTransaction = function (customerId, orderParams, cb) {
     var CustomerMicroService = loopback.findModel("CustomerMicroService");
     var OrderMicroService = loopback.findModel("OrderMicroService");
     let orderId;
-    return OrderMicroService.OrderAPI_createOrder({ customerId: customerId, productList: orderParams.productList }).then(result => {
+    let addressId = orderParams.addressId;
+    delete orderParams.addressId;
+    orderParams.customerId = customerId;
+    OrderMicroService.OrderAPI_createOrder({ createOrderData: orderParams }).then(result => {
       orderId = result.obj.orderId;
       return CustomerMicroService.TransactionAPI_createTransaction({
         customerId: customerId,
         orderId: orderId,
-        storeId: orderParams.storeId,
-        addressId: orderParams.addressId
+        addressId: addressId
       }).then(() => {
         cb(null, { isSuccess: true });
       }).catch(err => {
@@ -70,36 +72,88 @@ module.exports = function (WorkspaceFacadeAPI) {
     })
   }
 
-  WorkspaceFacadeAPI.remoteMethod('payOrder', {
+  WorkspaceFacadeAPI.remoteMethod('payTransaction', {
     description: "Pay an order.",
     accepts: [{ arg: 'customerId', type: 'string', required: true, description: "Customer Id.", http: { source: 'path' } },
     { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } }],
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
-    http: { path: '/workspace/customerId/:customerId/transactionId/:transactionId/payOrder', verb: 'put', status: 200, errorStatus: 500 }
+    http: { path: '/workspace/customerId/:customerId/transactionId/:transactionId/payTransaction', verb: 'post', status: 200, errorStatus: 500 }
   });
-  WorkspaceFacadeAPI.payOrder = function (customerId, transactionId, cb) {
+  WorkspaceFacadeAPI.payTransaction = function (customerId, transactionId, cb) {
     var CustomerMicroService = loopback.findModel("CustomerMicroService");
     var OrderMicroService = loopback.findModel("OrderMicroService");
     //TBD third part pay.
-    return Promise.resolve().then(result => {
-      return CustomerMicroService.TransactionAPI_changeStatus({ transactionId: transactionId, status: "payed" })
-    }).then(() => {
+    CustomerMicroService.TransactionAPI_changeStatus({ transactionId: transactionId, status: "payed" }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
     })
   }
 
+  WorkspaceFacadeAPI.remoteMethod('getCustomerOwnedTransactions', {
+    description: "Get customer owend transactions.",
+    accepts: { arg: 'customerId', type: 'string', required: true, description: "Customer Id", http: { source: 'path' } },
+    returns: { arg: 'resp', type: ['Transaction'], description: '', root: true },
+    http: { path: '/workspace/customerId/:customerId/getCustomerOwnedTransactions', verb: 'get', status: 200, errorStatus: 500 }
+  });
+  WorkspaceFacadeAPI.getCustomerOwnedTransactions = function (customerId, cb) {
+    var CustomerMicroService = loopback.findModel("CustomerMicroService");
+    CustomerMicroService.TransactionAPI_getCustomerOwnedTransactions({ customerId: customerId }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    })
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getTransactionDetail', {
+    description: "Get transaction detail by transactionId.",
+    accepts: [{ arg: 'customerId', type: 'string', required: true, description: "Customer Id", http: { source: 'path' } },
+    { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: ['Transaction'], description: '', root: true },
+    http: { path: '/workspace/customerId/:customerId/transactionId/:transactionId/getTransactionDetail', verb: 'get', status: 200, errorStatus: 500 }
+  });
+  WorkspaceFacadeAPI.getTransactionDetail = function (customerId, transactionId, cb) {
+    var CustomerMicroService = loopback.findModel("CustomerMicroService");
+    var OrderMicroService = loopback.findModel("OrderMicroService");
+    CustomerMicroService.TransactionAPI_getTransactionById({ customerId: customerId, transactionId: transactionId }).then(result => {
+      return OrderMicroService.OrderAPI_findOrderById({ orderId: result.obj.orderId });
+    }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    })
+  }
+
   WorkspaceFacadeAPI.remoteMethod('searchTransaction', {
-    description: "Search history transactions.",
+    description: "Search customer's history transactions.",
     accepts: { arg: 'searchData', type: 'SearchTransactionRequest', required: true, description: "search parameters", http: { source: 'body' } },
     returns: { arg: 'resp', type: ['Transaction'], description: "", root: true },
     http: { path: '/workspace/searchTransactions', verb: 'post', status: 200, errorStatus: 500 }
   });
   WorkspaceFacadeAPI.searchTransaction = function (searchData, cb) {
     var CustomerMicroService = loopback.findModel("CustomerMicroService");
-    return CustomerMicroService.TransactionAPI_searchTransaction({ filter: searchData }).then(result => {
+    CustomerMicroService.TransactionAPI_searchTransaction({ filter: searchData }).then(result => {
       cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    })
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('addLogisticsInfo', {
+    description: "Add logistics information of an order.",
+    accepts: [{ arg: 'customerId', type: 'string', required: true, description: "Customer Id.", http: { source: 'path' } },
+    { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id.", http: { source: 'path' } },
+    { arg: 'logisticsData', type: 'AddLogisticsInfoRequest', required: true, description: "logistics information.", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: "", root: true },
+    http: { path: '/workspace/customerId/:customerId/transactionId/:transactionId/attachLogistics', verb: 'post', status: 200, errorStatus: 500 }
+  });
+  WorkspaceFacadeAPI.addLogisticsInfo = function (customerId, transactionId, logisticsData, cb) {
+    var CustomerMicroService = loopback.findModel("CustomerMicroService");
+    var OrderMicroService = loopback.findModel("OrderMicroService");
+    CustomerMicroService.TransactionAPI_getTransactionById({ customerId: customerId, transactionId: transactionId }).then(result => {
+      return OrderMicroService.OrderAPI_attachLogistics({ logistics: logisticsData });
+    }).then(() => {
+      cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
     })
@@ -114,23 +168,23 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.addAddress = function (customerId, addressData, cb) {
     var CustomerMicroService = loopback.findModel("CustomerMicroService");
-    return CustomerMicroService.AddressAPI_addAddress({ customerId: customerId, addressData: addressData }).then(() => {
+    CustomerMicroService.AddressAPI_addAddress({ customerId: customerId, addressData: addressData }).then(() => {
       cb(null, { isSuccess: true });
-    }).catech(err => {
+    }).catch(err => {
       cb(err, null);
     })
   }
 
   WorkspaceFacadeAPI.remoteMethod('modifyAddress', {
     description: "Modify shipping address.",
-    accepts: [{ arg: 'addressId', type: 'string', required: true, description: "Address Id", http: { source: 'path' } },
-    { arg: 'addressData', type: 'AddAddressRequest', required: true, description: "Address information", http: { source: 'body' } }],
-    returns: { arg: 'resp', type: ['Transaction'], description: "", root: true },
-    http: { path: '/workspace/addressId/:addressId/modifyAddress', verb: 'put', status: 200, errorStatus: 500 }
+    accepts: [{ arg: 'customerId', type: 'string', required: true, description: "CustomerId Id", http: { source: 'path' } },
+    { arg: 'addressData', type: 'ModifyAddressRequest', required: true, description: "Address information", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: "", root: true },
+    http: { path: '/workspace/customerId/:customerId/modifyAddress', verb: 'put', status: 200, errorStatus: 500 }
   });
-  WorkspaceFacadeAPI.modifyAddress = function (addressId, addressdata, cb) {
+  WorkspaceFacadeAPI.modifyAddress = function (customerId, addressData, cb) {
     var CustomerMicroService = loopback.findModel("CustomerMicroService");
-    return CustomerMicroService.AddressAPI_modifyAddress({ addressId: addressId, addressData: addressData }).then(() => {
+    CustomerMicroService.AddressAPI_modifyAddress({ customerId: customerId, addressData: addressData }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
@@ -138,14 +192,14 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('getAddress', {
-    description: "Modify shipping address.",
+    description: "Get shipping address.",
     accepts: { arg: 'customerId', type: 'string', required: true, description: "Customer Id", http: { source: 'path' } },
     returns: { arg: 'resp', type: ['Address'], description: "", root: true },
     http: { path: '/workspace/customerId/:customerId/getAddress', verb: 'get', status: 200, errorStatus: 500 }
   });
   WorkspaceFacadeAPI.getAddress = function (customerId, cb) {
     var CustomerMicroService = loopback.findModel("CustomerMicroService");
-    return CustomerMicroService.AddressAPI_getAddress({ customerId: customerId }).then(result => {
+    CustomerMicroService.AddressAPI_getAddress({ customerId: customerId }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
@@ -161,10 +215,39 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.deleteAddress = function (customerId, addressIds, cb) {
     var CustomerMicroService = loopback.findModel("CustomerMicroService");
-    return Promise.map(addressIds, addressId => {
+    Promise.map(addressIds, addressId => {
       return CustomerMicroService.AddressAPI_deleteAddress({ addressId: addressId });
     }).then(() => {
       cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    })
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getProductSeries', {
+    description: "Get product series.",
+    returns: { arg: 'resp', type: ['ProductSeries'], description: "", root: true },
+    http: { path: '/workspace/getProductSeries', verb: 'get', status: 200, errorStatus: 500 }
+  });
+  WorkspaceFacadeAPI.getProductSeries = function (cb) {
+    var OrderMicroService = loopback.findModel("OrderMicroService");
+    OrderMicroService.OrderAPI_getProductSeries().then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(null, err);
+    })
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getProductsBySeries', {
+    description: "Get products by product series Id.",
+    accepts: { arg: 'seriesId', type: 'string', required: true, description: "product series id", http: { source: 'path' } },
+    returns: { arg: 'resp', type: ['Product'], description: 'is success or not', root: true },
+    http: { path: '/workspace/seriesId/:seriesId/getProductsBySeries', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getProductsBySeries = function (seriesId, cb) {
+    var OrderMicroService = loopback.findModel("OrderMicroService");
+    OrderMicroService.OrderAPI_getProductsBySeries({ seriesId: seriesId }).then(result => {
+      cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
     })

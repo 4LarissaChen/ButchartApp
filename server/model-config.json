@@ -7,7 +7,14 @@
       "./models",
       "../common/models/apimodel/workspace",
       "../common/models/datamodel",
-      "../common/models/apimodel/workspace/apiSpec/sendMessage/response"
+      "../common/models/apimodel/workspace/apiSpec/common/response",
+      "../common/models/apimodel/workspace/apiSpec/sendMessage/response",
+      "../common/models/apimodel/workspace/apiSpec/sendMessage/response",
+      "../common/models/apimodel/workspace/apiSpec/createTransaction/request",
+      "../common/models/apimodel/workspace/apiSpec/searchTransaction/request",
+      "../common/models/apimodel/workspace/apiSpec/addAddress/request",
+      "../common/models/apimodel/workspace/apiSpec/modifyAddress/request",
+      "../common/models/apimodel/workspace/apiSpec/addLogisticsInfo/request"
     ],
     "mixins": [
       "loopback/common/mixins",
@@ -34,10 +41,53 @@
   
   "SendMessageResponse": {
     "dataSource": "db",
-    "public": false
+    "public": true
   },
 
   "WorkspaceFacadeAPI": {
+    "dataSource": "db",
+    "public": true
+  },
+
+  "IsSuccessResponse": {
+    "dataSource": "db",
+    "public": true
+  },
+
+  "CreateTransactionRequest": {
+    "dataSource": "db",
+    "public": true
+  },
+  "AddAddressRequest": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ModifyAddressRequest": {
+    "dataSource": "db",
+    "public": true
+  },
+  "SearchTransactionRequest": {
+    "dataSource": "db",
+    "public": true
+  },
+  "AddLogisticsInfoRequest": {
+    "dataSource": "db",
+    "public": true
+  },
+
+  "Transaction": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Address": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ProductSeries": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Product": {
     "dataSource": "db",
     "public": true
   }

@@ -1,18 +1,11 @@
 {
-	"name": "Address",
-	"base": "Model",
-	"strict": true,
-	"idInjection": false,
-	"options": {
-		"validateUpsert": true
-	},
-	"properties": {
+  "name": "ModifyAddressRequest",
+  "idInjection": false,
+  "base": "Model",
+  "strict": true,
+  "properties": {
 		"id": false,
 		"_id": {
-			"type": "string",
-			"required": true
-		},
-		"customerId": {
 			"type": "string",
 			"required": true
 		},
@@ -30,9 +23,9 @@
 		"isDefault": {
 			"type": "boolean"
 		}
-	},
-	"validations": [],
-	"relations": {},
-	"acls": [],
-	"methods": {}
+  },
+  "validation": [],
+  "relations": {},
+  "methods": {},
+  "mixins": {}
 }

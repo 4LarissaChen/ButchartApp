@@ -1,0 +1,27 @@
+{
+  "name": "AddAddressRequest",
+  "idInjection": false,
+  "base": "Model",
+  "strict": true,
+  "properties": {
+    "id": false,
+		"address": {
+			"type": "string",
+			"required": true
+		},
+		"tel": {
+			"type": "string",
+			"required": true
+		},
+		"postcode": {
+			"type": "string"
+		},
+		"isDefault": {
+			"type": "boolean"
+		}
+  },
+  "validation": [],
+  "relations": {},
+  "methods": {},
+  "mixins": {}
+}

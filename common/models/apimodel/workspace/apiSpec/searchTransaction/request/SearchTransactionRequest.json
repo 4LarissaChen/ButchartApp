@@ -10,9 +10,6 @@
     "customerId": {
       "type": "string"
     },
-    "storeId": {
-      "type": "string"
-    },
     "status": {
       "type": "string"
     },
