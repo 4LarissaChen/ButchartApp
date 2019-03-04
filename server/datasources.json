@@ -3,8 +3,8 @@
     "name": "db",
     "connector": "memory"
   },
-  "customerMicroServiceDs": {
-    "name": "customerMicroServiceDs",
+  "userMicroServiceDs": {
+    "name": "userMicroServiceDs",
     "connector": "swagger",
     "spec": "http://localhost:4001/explorer/swagger.json"
   },

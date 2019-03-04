@@ -1,5 +1,5 @@
 {
-  "name": "CustomerMicroService",
+  "name": "UserMicroService",
   "base": "Model",
   "idInjection": true,
   "strict": true,

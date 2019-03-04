@@ -29,8 +29,8 @@
     "public": false
   },
   
-  "CustomerMicroService": {
-    "dataSource": "customerMicroServiceDs",
+  "UserMicroService": {
+    "dataSource": "userMicroServiceDs",
     "public": false
   },
   "OrderMicroService": {

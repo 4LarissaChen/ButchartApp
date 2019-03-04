@@ -12,7 +12,7 @@
 			"type": "string",
 			"required": true
 		},
-		"customerId": {
+		"userId": {
 			"type": "string",
 			"required": true
 		},
@@ -26,9 +26,6 @@
 		},
 		"postcode": {
 			"type": "string"
-		},
-		"isDefault": {
-			"type": "boolean"
 		}
 	},
 	"validations": [],

@@ -12,7 +12,7 @@
 			"id": true,
 			"required": true
 		},
-		"customerId": {
+		"userId": {
 			"type": "string",
 			"required": true
 		},
