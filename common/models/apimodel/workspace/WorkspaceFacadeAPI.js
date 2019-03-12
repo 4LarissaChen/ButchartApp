@@ -67,7 +67,7 @@ module.exports = function (WorkspaceFacadeAPI) {
       }).then(() => {
         cb(null, { isSuccess: true });
       }).catch(err => {
-        cb(err.null);
+        cb(err, null);
       })
     })
   }
