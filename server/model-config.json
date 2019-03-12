@@ -6,6 +6,7 @@
       "../common/models",
       "./models",
       "../common/models/apimodel/workspace",
+      "../common/models/apimodel/manager",
       "../common/models/datamodel",
       "../common/models/apimodel/workspace/apiSpec/common/response",
       "../common/models/apimodel/workspace/apiSpec/sendMessage/response",
@@ -45,6 +46,10 @@
   },
 
   "WorkspaceFacadeAPI": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ManagerFacadeAPI": {
     "dataSource": "db",
     "public": true
   },
@@ -88,6 +93,10 @@
     "public": true
   },
   "Product": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Store": {
     "dataSource": "db",
     "public": true
   }

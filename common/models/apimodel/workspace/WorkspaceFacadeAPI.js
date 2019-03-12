@@ -4,6 +4,7 @@ var loopback = require('loopback');
 var nodeUtil = require('util');
 var moment = require('moment');
 var Promise = require('bluebird');
+var errorConstant = require('../../../../server/constants/errorConstants.js');
 
 var apiUtils = require('../../../../server/utils/apiUtils.js');
 
@@ -247,6 +248,21 @@ module.exports = function (WorkspaceFacadeAPI) {
   WorkspaceFacadeAPI.getProductsBySeries = function (seriesId, cb) {
     var OrderMicroService = loopback.findModel("OrderMicroService");
     OrderMicroService.OrderAPI_getProductsBySeries({ seriesId: seriesId }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    })
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getStoreList', {
+    description: "Get products by product series Id.",
+    accepts: { arg: 'userId', type: 'string', required: true, description: "User id", http: { source: 'path' } },
+    returns: { arg: 'resp', type: ['Store'], description: 'is success or not', root: true },
+    http: { path: '/workspace/user/:userId/getStoreList', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getStoreList = function (userId, cb) {
+    var OrderMicroService = loopback.findModel("OrderMicroService");
+    OrderMicroService.StoreAPI_getStoreList().then(result => {
       cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
