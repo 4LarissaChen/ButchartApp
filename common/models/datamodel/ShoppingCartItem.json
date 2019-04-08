@@ -1,0 +1,29 @@
+{
+  "name": "ShoppingCartItem",
+  "base": "Model",
+  "idInjection": false,
+  "strict": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": false,
+    "productId": {
+      "type": "string",
+      "required": true
+    },
+    "addDate": {
+      "type": "string",
+      "required": false
+    },
+    "quantity": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "mixins": {}
+}

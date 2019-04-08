@@ -6,7 +6,7 @@
   "properties": {
     "id": false,
     "productList": {
-      "type": ["string"],
+      "type": ["ShoppingCartItem"],
       "required": true
     },
     "addressId": {
@@ -25,5 +25,7 @@
       "type": "string",
       "required": true
     }
+  },
+  "relations":{
   }
 }

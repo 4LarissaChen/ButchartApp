@@ -1,0 +1,34 @@
+{
+  "name": "GetShoppingListResponse",
+  "idInjection": false,
+  "base": "Model",
+  "strict": true,
+  "properties": {
+    "id": false,
+    "productId": {
+      "type": "string",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "string",
+      "required": false
+    },
+    "price": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "string"
+    },
+    "addDate": {
+      "type": "string"
+    }
+  },
+  "validation": [],
+  "relations": {},
+  "methods": {},
+  "mixins": {}
+}

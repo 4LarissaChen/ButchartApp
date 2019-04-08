@@ -255,7 +255,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('getStoreList', {
-    description: "Get products by product series Id.",
+    description: "Get stores.",
     accepts: { arg: 'userId', type: 'string', required: true, description: "User id", http: { source: 'path' } },
     returns: { arg: 'resp', type: ['Store'], description: 'is success or not', root: true },
     http: { path: '/workspace/user/:userId/getStoreList', verb: 'get', status: 200, errorStatus: [500] }
@@ -267,5 +267,65 @@ module.exports = function (WorkspaceFacadeAPI) {
     }).catch(err => {
       cb(err, null);
     })
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('addToShoppingList', {
+    description: "Add a product to user's shopping cart.",
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User id", http: { source: 'path' } },
+    { arg: 'productId', type: 'string', required: true, description: "Product id", http: { source: 'path' } },
+    { arg: 'quantity', type: 'string', required: true, description: "Quantity", http: { source: 'query' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
+    http: { path: '/workspace/user/:userId/product/:productId/addToShoppingList', verb: 'post', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.addToShoppingList = function (userId, productId, quantity, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.UserAPI_addToShoppingList({ userId: userId, productId: productId, quantity: quantity }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('updateShoppingList', {
+    description: "Update user's shopping cart.",
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User id", http: { source: 'path' } },
+    { arg: 'data', type: ['ShoppingCartItem'], required: true, description: "User id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
+    http: { path: '/workspace/user/:userId/updateShoppingList', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.updateShoppingList = function (userId, data, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.UserAPI_updateShoppingList({ userId: userId, data: data }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getShoppingList', {
+    description: "Get user's shopping cart items.",
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: ['GetShoppingListResponse'], description: 'is success or not', root: true },
+    http: { path: '/workspace/user/:userId/getShoppingList', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getShoppingList = function (userId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    var OrderMicroService = loopback.findModel("OrderMicroService");
+    let resp = [];
+    UserMicroService.UserAPI_getShoppingList({ userId: userId }).then(result => {
+      return Promise.map(result.obj, item => {
+        return OrderMicroService.OrderAPI_getProductsById({ productId: item.productId }).then(result => {
+          item.name = result.obj.name;
+          item.description = result.obj.description;
+          item.price = result.obj.price;
+          resp.push(item);
+          return Promise.resolve();
+        });
+      });
+    }).then(() => {
+      cb(null, resp);
+    }).catch(err => {
+      cb(err, null);
+    });
   }
 }

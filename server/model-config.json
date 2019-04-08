@@ -15,7 +15,8 @@
       "../common/models/apimodel/workspace/apiSpec/searchTransaction/request",
       "../common/models/apimodel/workspace/apiSpec/addAddress/request",
       "../common/models/apimodel/workspace/apiSpec/modifyAddress/request",
-      "../common/models/apimodel/workspace/apiSpec/addLogisticsInfo/request"
+      "../common/models/apimodel/workspace/apiSpec/addLogisticsInfo/request",
+      "../common/models/apimodel/workspace/apiSpec/getShoppingList/response"
     ],
     "mixins": [
       "loopback/common/mixins",
@@ -79,6 +80,10 @@
     "dataSource": "db",
     "public": true
   },
+  "GetShoppingListResponse": {
+    "dataSource": "db",
+    "public": true
+  },
 
   "Transaction": {
     "dataSource": "db",
@@ -97,6 +102,10 @@
     "public": true
   },
   "Store": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ShoppingCartItem": {
     "dataSource": "db",
     "public": true
   }
