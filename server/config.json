@@ -18,5 +18,10 @@
       "limit": "100kb"
     },
     "cors": false
+  },
+  "orderAssignStrategy":{
+    "庆春店": "0.6",
+    "钱江店": "0.3",
+    "银泰店": "0.1"
   }
 }

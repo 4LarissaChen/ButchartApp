@@ -65,11 +65,14 @@ module.exports = function (WorkspaceFacadeAPI) {
         userId: userId,
         orderId: orderId,
         addressId: addressId
-      }).then(() => {
-        cb(null, { isSuccess: true });
-      }).catch(err => {
-        cb(err, null);
-      })
+      });
+    }).then(() => {
+      if (!orderParams.floristId || orderParams.floristId == "") return;
+      return UserMicroService.UserAPI_setDefaultFlorist({ userId: userId, floristId: floristId });
+    }).then(() => {
+      cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
     })
   }
 
@@ -164,7 +167,7 @@ module.exports = function (WorkspaceFacadeAPI) {
     description: "Add shipping address.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
     { arg: 'addressData', type: 'AddAddressRequest', required: true, description: "Address information", http: { source: 'body' } }],
-    returns: { arg: 'resp', type: ['Transaction'], description: "", root: true },
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: "", root: true },
     http: { path: '/workspace/userId/:userId/addAddress', verb: 'put', status: 200, errorStatus: 500 }
   });
   WorkspaceFacadeAPI.addAddress = function (userId, addressData, cb) {

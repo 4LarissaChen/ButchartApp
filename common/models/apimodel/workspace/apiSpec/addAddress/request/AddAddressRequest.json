@@ -13,6 +13,19 @@
 			"type": "string",
 			"required": true
 		},
+		"name": {
+			"type": "string",
+			"required": true
+		},
+		"province": {
+			"type": "string"
+		},
+		"city": {
+			"type": "string"
+		},
+		"district": {
+			"type": "string"
+		},
 		"postcode": {
 			"type": "string"
 		},

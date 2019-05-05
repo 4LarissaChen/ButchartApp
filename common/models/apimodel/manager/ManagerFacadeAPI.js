@@ -125,4 +125,36 @@ module.exports = function (ManagerFacadeAPI) {
       cb(err, null);
     })
   }
+
+  ManagerFacadeAPI.remoteMethod('getFlorist', {
+    description: "Create florist by userId.",
+    accepts: [{ arg: 'floristId', type: 'string', required: true, description: "Florist Id.", http: { source: 'query' } },
+    { arg: 'storeId', type: 'string', required: true, description: "Store Id.", http: { source: 'query' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/getFlorist', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.getFlorist = function (floristId, storeId, cb) {
+    var OrderMicroService = loopback.findModel("OrderMicroService");
+    var UserMicroService = loopback.findModel("UserMicroService");
+    let resp;
+    OrderMicroService.floristAPI_getFlorist({ floristId: floristId, storeId: storeId }).then(result => {
+      if (!result.obj.length)
+        return UserMicroService.UserAPI_getUserInfo({ userId: floristId }).then(result => {
+          resp = result.obj;
+          return Promise.resolve(resp);
+        })
+      else
+        return Promise.map(result.obj, store => {
+          return Promise.map(store.includeFlorists, floristId => {
+            return UserMicroService.UserAPI_getUserInfo({ userId: floristId });
+          }).then(result => {
+            store.includeFlorists = result.obj;
+            resp.push(store);
+            return Promise.resolve();
+          })
+        })
+    }).then(() => {
+      cb(null, resp);
+    }).catch(err => err);
+  }
 }

@@ -14,14 +14,20 @@
       "required": true
     },
     "storeId": {
-      "type": "string",
-      "required": true
+      "type": "string"
+    },
+    "floristId": {
+      "type": "string"
     },
     "totalPrice": {
       "type": "string",
       "required": true
     },
     "freight": {
+      "type": "string",
+      "required": true
+    },
+    "expectedDeliverDate": {
       "type": "string",
       "required": true
     }

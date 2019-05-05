@@ -16,13 +16,25 @@
 			"type": "string",
 			"required": true
 		},
-		"address": {
+		"name": {
 			"type": "string",
 			"required": true
 		},
 		"tel": {
 			"type": "string",
 			"required": true
+		},
+		"province":{
+			"type":"string"
+		},
+		"city":{
+			"type":"string"
+		},
+		"district":{
+			"type":"string"
+		},
+		"street": {
+			"type": "string"
 		},
 		"postcode": {
 			"type": "string"
