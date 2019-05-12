@@ -87,7 +87,7 @@ module.exports = function (WorkspaceFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     var OrderMicroService = loopback.findModel("OrderMicroService");
     //TBD third part pay.
-    UserMicroService.TransactionAPI_changeStatus({ transactionId: transactionId, status: "payed" }).then(() => {
+    UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: { status: "payed" } }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
