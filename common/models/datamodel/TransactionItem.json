@@ -1,0 +1,28 @@
+{
+  "name": "TransactionItem",
+  "base": "Model",
+  "idInjection": false,
+  "strict": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": false,
+    "productId": {
+      "type": "string",
+      "required": true
+    },
+    "quantity": {
+      "type": "string",
+      "required": true
+    },
+    "comment": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "mixins": {}
+}

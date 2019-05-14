@@ -1,5 +1,5 @@
 {
-	"name": "AddLogisticsInfoRequest",
+	"name": "CreateTransactionRequest_Logistics",
 	"base": "Model",
 	"idInjection": false,
 	"options": {
@@ -8,11 +8,19 @@
 	"properties": {
 		"id": false,
 		"trackingId": {
+			"type": "string"
+		},
+		"deliveryMethod": {
+			"type": "string",
+			"required": true
+		},
+		"freight": {
 			"type": "string",
 			"required": true
 		},
 		"logisticsCompany": {
-			"type": "string"
+			"type": "string",
+			"required": false
 		}
 	},
 	"validations": [],

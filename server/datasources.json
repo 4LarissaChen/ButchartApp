@@ -7,10 +7,5 @@
     "name": "userMicroServiceDs",
     "connector": "swagger",
     "spec": "http://localhost:4001/explorer/swagger.json"
-  },
-  "orderMicroServiceDs": {
-    "name": "orderMicroServiceDs",
-    "connector": "swagger",
-    "spec": "http://localhost:4002/explorer/swagger.json"
   }
 }

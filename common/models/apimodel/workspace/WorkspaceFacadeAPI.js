@@ -49,26 +49,12 @@ module.exports = function (WorkspaceFacadeAPI) {
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
     { arg: 'orderParams', type: 'CreateTransactionRequest', required: true, description: "detail order properties", http: { source: 'body' } }],
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
-    http: { path: '/workspace/userId/:userId/createTransaction', verb: 'put', status: 200, errorStatus: 500 }
+    http: { path: '/workspace/userId/:userId/createTransaction', verb: 'post', status: 200, errorStatus: 500 }
   });
 
   WorkspaceFacadeAPI.createTransaction = function (userId, orderParams, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    var OrderMicroService = loopback.findModel("OrderMicroService");
-    let orderId;
-    let addressId = orderParams.addressId;
-    delete orderParams.addressId;
-    orderParams.userId = userId;
-    OrderMicroService.OrderAPI_createOrder({ createOrderData: orderParams }).then(result => {
-      orderId = result.obj.orderId;
-      return UserMicroService.TransactionAPI_createTransaction({
-        userId: userId,
-        orderId: orderId,
-        addressId: addressId
-      });
-    }).then(() => {
-      if (!orderParams.floristId || orderParams.floristId == "") return;
-      return UserMicroService.UserAPI_setDefaultFlorist({ userId: userId, floristId: floristId });
+    UserMicroService.TransactionAPI_createTransaction({ userId: userId, createData: orderParams }).then(result => {
     }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
@@ -81,13 +67,16 @@ module.exports = function (WorkspaceFacadeAPI) {
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
     { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } }],
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
-    http: { path: '/workspace/userId/:userId/transactionId/:transactionId/payTransaction', verb: 'post', status: 200, errorStatus: 500 }
+    http: { path: '/workspace/userId/:userId/transactionId/:transactionId/payTransaction', verb: 'put', status: 200, errorStatus: 500 }
   });
   WorkspaceFacadeAPI.payTransaction = function (userId, transactionId, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    var OrderMicroService = loopback.findModel("OrderMicroService");
     //TBD third part pay.
-    UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: { status: "payed" } }).then(() => {
+    let updateData = {
+      status: "payed",
+      payedDate: moment().local().format('YYYY-MM-DD hh:mm:ss')
+    }
+    UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: updateData }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
@@ -102,26 +91,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.getUserOwnedTransactions = function (userId, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.TransactionAPI_getUserOwnedTransactions({ userId: userId }).then(result => {
-      cb(null, result.obj);
-    }).catch(err => {
-      cb(err, null);
-    })
-  }
-
-  WorkspaceFacadeAPI.remoteMethod('getTransactionDetail', {
-    description: "Get transaction detail by transactionId.",
-    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
-    { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } }],
-    returns: { arg: 'resp', type: ['Transaction'], description: '', root: true },
-    http: { path: '/workspace/userId/:userId/transactionId/:transactionId/getTransactionDetail', verb: 'get', status: 200, errorStatus: 500 }
-  });
-  WorkspaceFacadeAPI.getTransactionDetail = function (userId, transactionId, cb) {
-    var UserMicroService = loopback.findModel("UserMicroService");
-    var OrderMicroService = loopback.findModel("OrderMicroService");
-    UserMicroService.TransactionAPI_getTransactionById({ userId: userId, transactionId: transactionId }).then(result => {
-      return OrderMicroService.OrderAPI_findOrderById({ orderId: result.obj.orderId });
-    }).then(result => {
+    UserMicroService.TransactionAPI_searchTransaction({ filter: { userId: userId } }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
@@ -153,9 +123,13 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.addLogisticsInfo = function (userId, transactionId, logisticsData, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    var OrderMicroService = loopback.findModel("OrderMicroService");
-    UserMicroService.TransactionAPI_getTransactionById({ userId: userId, transactionId: transactionId }).then(result => {
-      return OrderMicroService.OrderAPI_attachLogistics({ logistics: logisticsData });
+    UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
+      let transaction = result.obj;
+      logisticsData = logisticsData.__data;
+      for(let key in logisticsData)
+        transaction.logistics[key] = logisticsData[key];
+      transaction.logistics.sendDate = moment().local().format('YYYY-MM-DD hh:mm:ss');
+      return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: transaction});
     }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {

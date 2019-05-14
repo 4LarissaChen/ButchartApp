@@ -6,6 +6,7 @@ var nodeUtil = require('util');
 var moment = require('moment');
 var Promise = require('bluebird');
 var errorConstant = require('../../../../server/constants/errorConstants.js');
+var ManagerFacadeHelper = require('./internalService/ManagerFacadeHelper.js');
 
 var apiUtils = require('../../../../server/utils/apiUtils.js');
 
@@ -128,33 +129,53 @@ module.exports = function (ManagerFacadeAPI) {
 
   ManagerFacadeAPI.remoteMethod('getFlorist', {
     description: "Create florist by userId.",
-    accepts: [{ arg: 'floristId', type: 'string', required: true, description: "Florist Id.", http: { source: 'query' } },
-    { arg: 'storeId', type: 'string', required: true, description: "Store Id.", http: { source: 'query' } }],
+    accepts: [{ arg: 'floristId', type: 'string', required: false, description: "Florist Id.", http: { source: 'query' } },
+    { arg: 'storeId', type: 'string', required: false, description: "Store Id.", http: { source: 'query' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/getFlorist', verb: 'get', status: 200, errorStatus: [500] }
   });
   ManagerFacadeAPI.getFlorist = function (floristId, storeId, cb) {
+    ManagerFacadeHelper.getFlorist(floristId, storeId).then(resp => {
+      cb(null, resp);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('batchOrderJob', {
+    description: "Create florist by userId.",
+    accepts: [{ arg: 'option', type: 'string', required: true, description: "day/month/year", http: { source: 'query' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/batchOrderJob', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.batchOrderJob = function (cb) {
     var OrderMicroService = loopback.findModel("OrderMicroService");
     var UserMicroService = loopback.findModel("UserMicroService");
-    let resp;
-    OrderMicroService.floristAPI_getFlorist({ floristId: floristId, storeId: storeId }).then(result => {
-      if (!result.obj.length)
-        return UserMicroService.UserAPI_getUserInfo({ userId: floristId }).then(result => {
-          resp = result.obj;
-          return Promise.resolve(resp);
-        })
-      else
-        return Promise.map(result.obj, store => {
-          return Promise.map(store.includeFlorists, floristId => {
-            return UserMicroService.UserAPI_getUserInfo({ userId: floristId });
-          }).then(result => {
-            store.includeFlorists = result.obj;
-            resp.push(store);
-            return Promise.resolve();
-          })
-        })
-    }).then(() => {
-      cb(null, resp);
-    }).catch(err => err);
+    let time = moment().local().format('YYYY-MM-DD HH:mm:ss');
+    let week = time.day() == 1 ? true : false;
+    let month = time.date() == 1 ? true : false;
+    let season = time.subtract(1, 'd').quarter() < time.add(1, 'd').quarter() ? true : false;
+    let year = time.dayOfYear() == 1 ? true : false;
+    let condition = {};
+    let orderResult = {}
+    let floristIds;
+    condition.userId = "";
+    condition.status = "payed";
+    condition.fromDate = time.subtract(1, 'd').split(' ')[0] + " 00:00:00";
+    condition.toDate = time.split(' ')[0] + " 23:59:59";
+    OrderMicroService.FloristAPI_getFloristIdList().then(result => {
+      floristIds = result.obj;
+      return UserMicroService.TransactionAPI_searchTransaction({ filter: searchData })
+    }).then(result => {
+      orderResult.day = result.obj;
+      return Promise.map(orderResult.day, transaction => {
+        return OrderMicroService.OrderAPI_findOrderById({ orderId: transaction.orderId })
+      });
+    }).then(result => {
+      let orders = result.obj;
+      floristIds.forEach(florist => {
+        let dailyOrder = orders.filter(r => r.florist._id == florist);
+      })
+    })
   }
 }

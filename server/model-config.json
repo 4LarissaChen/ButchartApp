@@ -35,10 +35,6 @@
     "dataSource": "userMicroServiceDs",
     "public": false
   },
-  "OrderMicroService": {
-    "dataSource": "orderMicroServiceDs",
-    "public": false
-  },
   
   
   "SendMessageResponse": {
@@ -84,6 +80,10 @@
     "dataSource": "db",
     "public": true
   },
+  "CreateTransactionRequest_Logistics": {
+    "dataSource": "db",
+    "public": true
+  },
 
   "Transaction": {
     "dataSource": "db",
@@ -106,6 +106,10 @@
     "public": true
   },
   "ShoppingCartItem": {
+    "dataSource": "db",
+    "public": true
+  },
+  "TransactionItem": {
     "dataSource": "db",
     "public": true
   }
