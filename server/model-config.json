@@ -26,8 +26,28 @@
     ]
   },
 
+  "ButchartUser": {
+    "dataSource": "auth-api",
+    "public": false
+  },
+  "User": {
+    "dataSource": "auth-api",
+    "public": false
+  },
+  "AccessToken": {
+    "dataSource": "auth-api",
+    "public": false
+  },
   "ACL": {
-    "dataSource": "db",
+    "dataSource": "auth-api",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "auth-api",
+    "public": false
+  },
+  "Role": {
+    "dataSource": "auth-api",
     "public": false
   },
   

@@ -7,9 +7,6 @@
   },
   "properties": {
     "id": false,
-    "userId": {
-      "type": "string"
-    },
     "status": {
       "type": "string"
     },

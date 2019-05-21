@@ -15,7 +15,116 @@
   },
   "validations": [],
   "relations": {},
-  "acls": [],
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY",
+      "property": "*"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "login"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "sendMessage"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "createTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "TransactionOwner",
+      "permission": "ALLOW",
+      "property": "payTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "getUserOwnedTransactions"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "searchTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Florist",
+      "permission": "ALLOW",
+      "property": "addLogisticsInfo"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "addAddress"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "modifyAddress"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "getAddress"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "deleteAddress"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "getProductSeries"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "getProductsBySeries"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "getStoreList"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "addToShoppingList"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "updateShoppingList"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "getShoppingList"
+    }
+  ],
   "methods": {},
   "mixins": {}
 }

@@ -1,0 +1,75 @@
+{
+	"name": "ButchartUser",
+	"base": "User",
+	"strict": true,
+	"idInjection": true,
+	"options": {
+		"validateUpsert": true
+	},
+	"properties": {
+		"_id": {
+			"type": "string",
+			"id": true,
+			"required": true
+		},
+		"tel": {
+			"type": "string",
+			"required": true
+		},
+		"email": {
+			"type": "string",
+			"required": false
+		},
+		"fullname": {
+			"type": "string",
+			"required": false
+		},
+		"password": {
+			"type": "string",
+			"required": false
+		},
+		"avatar": {
+			"type": "string",
+			"required": false
+		},
+		"birthday": {
+			"type": "date",
+			"required": false
+		},
+		"lastLoginDate": {
+			"type": "date",
+			"required": false
+		},
+		"registerDate": {
+			"type": "date",
+			"required": false
+		},
+		"shoppingCart":{
+			"type": ["ShoppingCartItem"],
+			"required": false
+		}
+	},
+	"validations": [],
+	"relations": {
+		"relatedProfile": {
+			"type": "embedsOne",
+			"model": "UserProfile",
+			"property": "userProfile",
+			"options": {
+				"validate": true,
+				"forceId": false
+			}
+		},
+		"relatedFlorist": {
+			"type": "embedsOne",
+			"model": "Florist",
+			"property": "florist",
+			"options": {
+				"validate": true,
+				"forceId": false
+			}
+		}
+	},
+	"acls": [],
+	"methods": {}
+}

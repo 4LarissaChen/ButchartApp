@@ -5,10 +5,6 @@
   "strict": true,
   "properties": {
     "id": false,
-		"address": {
-			"type": "string",
-			"required": true
-		},
 		"tel": {
 			"type": "string",
 			"required": true
