@@ -1,8 +1,8 @@
 {
   "name": "ShoppingCartItem",
   "base": "Model",
-  "idInjection": false,
-  "strict": false,
+  "idInjection": true,
+  "strict": true,
   "options": {
     "validateUpsert": true
   },

@@ -60,14 +60,10 @@
 				"forceId": false
 			}
 		},
-		"relatedFlorist": {
-			"type": "embedsOne",
+		"florist": {
+			"type": "hasOne",
 			"model": "Florist",
-			"property": "florist",
-			"options": {
-				"validate": true,
-				"forceId": false
-			}
+			"foreignKey": "_id"
 		}
 	},
 	"acls": [],

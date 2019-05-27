@@ -13,19 +13,19 @@ var apiUtils = require('../../../../server/utils/apiUtils.js');
 module.exports = function (ManagerFacadeAPI) {
   apiUtils.disableRelatedModelRemoteMethod(ManagerFacadeAPI);
 
-  ManagerFacadeAPI.remoteMethod('createFlorist', {
-    description: "Get products by product series Id.",
+  ManagerFacadeAPI.remoteMethod('batchCreateFlorist', {
+    description: "Batch create florist accounts.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "Admin user id", http: { source: 'path' } },
-    { arg: 'tel', type: 'string', required: true, description: "Florist Id", http: { source: 'path' } }],
-    returns: { arg: 'resp', type: ['Product'], description: 'is success or not', root: true },
-    http: { path: '/manager/user/:userId/tel/:tel/createFlorist', verb: 'put', status: 200, errorStatus: [500] }
+    { arg: 'floristIds', type: 'string', required: true, description: "Florist Ids", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
+    http: { path: '/manager/user/:userId/tel/batchCreateFlorist', verb: 'post', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.createFlorist = function (userId, tel, cb) {
-    var OrderMicroService = loopback.findModel("OrderMicroService");
+  ManagerFacadeAPI.batchCreateFlorist = function (userId, floristIds, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.UserAPI_getUserInfo({ userId: tel }).then(result => {
-      if (result.obj.length == 0) throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "ButchartUser"));
-      return OrderMicroService.FloristAPI_createFlorist({ tel: result.obj[0]._id });
+    Promise.map(floristIds, floristId => {
+      return UserMicroService.UserAPI_getUserInfo({userId: floristId}).then(result => result.obj[0]);
+    }).then(result => {
+      
     }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
