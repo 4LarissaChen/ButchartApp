@@ -72,3 +72,9 @@ exports.build500Error = function(errorMsg, errorStack) {
   if (!errorStack) errorStack = null;
   return this.buildErrorMsg(errorConstant.ERROR_CODE_INTERNAL_SERVER_ERROR, errorMsg, errorStack);
 }
+
+exports.generateShortId = function (idPrefix) {
+	var prefix = idPrefix ? idPrefix.toLowerCase() + '_' : '';
+	var id = prefix + shortid.generate();
+	return id;
+};

@@ -8,6 +8,11 @@
     "connector": "swagger",
     "spec": "http://localhost:4001/explorer/swagger.json"
   },
+  "statisticsMicroServiceDs": {
+    "name": "statisticsMicroServiceDs",
+    "connector": "swagger",
+    "spec": "http://localhost:4002/explorer/swagger.json"
+  },
   "auth-api": {
     "url": "http://localhost:4001/api",
     "name": "auth-api",

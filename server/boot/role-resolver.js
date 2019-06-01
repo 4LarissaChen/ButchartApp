@@ -54,4 +54,19 @@ module.exports = function (app) {
 
 	});
 
+	//店长
+	Role.registerResolver('StoreAdmin', function (role, context, cb) {
+		var UserMicroService = loopback.findModel("UserMicroService");
+
+		if (context.modelName != "ManagerFacadeAPI") return reject(cb);
+		if (!context.remotingContext.args.transactionId) return reject(cb);
+		UserMicroService.StoreAPI_getStoreByManager({ managerId: context.accessToken.userId }).then(result => {
+			if (result.obj && result.obj.managerId == context.accessToken.userId)
+				cb(null, true);
+			else
+				return reject(cb);
+		}).catch(err => {
+			return reject(cb);
+		})
+	})
 };

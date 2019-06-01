@@ -16,6 +16,10 @@
       "type": "string",
       "required": true
     },
+    "managerId": {
+      "type": "string",
+      "required": true
+    },
     "address": {
       "type": "string",
       "required": false

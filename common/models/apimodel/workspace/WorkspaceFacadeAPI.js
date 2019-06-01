@@ -273,7 +273,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   WorkspaceFacadeAPI.updateShoppingList = function (userId, data, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.UserAPI_updateShoppingList({ userId: userId, data: data }).then(result => {
-      cb(null, {isSuccess: true});
+      cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
     });
@@ -300,6 +300,22 @@ module.exports = function (WorkspaceFacadeAPI) {
       });
     }).then(() => {
       cb(null, resp);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('updateCustomerPool', {
+    description: "Update florist customer pool.",
+    accepts: [{ arg: 'floristId', type: 'string', required: true, description: "florist id", http: { source: 'path' } },
+    { arg: 'customerId', type: 'string', required: true, description: "customer id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: ['GetShoppingListResponse'], description: 'is success or not', root: true },
+    http: { path: '/workspace/florist/:floristId/customer/:customerId/updateCustomerPool', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.updateCustomerPool = function (floristId, customerId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.FloristAPI_updateCustomerPool({ floristId: floristId, customerId: customerId }).then(result => {
+      cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
     });

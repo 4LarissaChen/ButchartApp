@@ -123,6 +123,12 @@
       "principalId": "Customer",
       "permission": "ALLOW",
       "property": "getShoppingList"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "updateCustomerPool"
     }
   ],
   "methods": {},

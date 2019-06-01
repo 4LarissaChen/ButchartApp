@@ -23,9 +23,9 @@ module.exports = function (ManagerFacadeAPI) {
   ManagerFacadeAPI.batchCreateFlorist = function (userId, floristIds, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     Promise.map(floristIds, floristId => {
-      return UserMicroService.UserAPI_getUserInfo({userId: floristId}).then(result => result.obj[0]);
+      return UserMicroService.UserAPI_getUserInfo({ userId: floristId }).then(result => result.obj[0]);
     }).then(result => {
-      
+
     }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
@@ -33,35 +33,19 @@ module.exports = function (ManagerFacadeAPI) {
     })
   }
 
-  ManagerFacadeAPI.remoteMethod('bindFloristsToStore', {
-    description: "Create florist by userId.",
-    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
-    { arg: 'storeId', type: 'string', required: true, description: "Order Id.", http: { source: 'path' } },
-    { arg: 'floristList', type: ['string'], required: true, description: "Florist Ids.", http: { source: 'body' } }],
+  ManagerFacadeAPI.remoteMethod('bindFloristToStore', {
+    description: "Bind a florist to store.",
+    accepts: [{ arg: 'storeId', type: 'string', required: true, description: "Store Id.", http: { source: 'path' } },
+    { arg: 'floristId', type: 'string', required: true, description: "Florist Id.", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
-    http: { path: '/user/:userId/store/:storeId/bindFloristsToStore', verb: 'post', status: 200, errorStatus: [500] }
+    http: { path: '/store/:storeId/florist/:floristId/bindFloristToStore', verb: 'put', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.bindFloristsToStore = function (userId, storeId, floristList, cb) {
-    var OrderMicroService = loopback.findModel("OrderMicroService");
+  ManagerFacadeAPI.bindFloristToStore = function (storeId, floristId, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    let floristIds = [];
-    let unknowIds = [];
-    Promise.map(floristList, florist => {
-      return UserMicroService.UserAPI_getUserInfo({ userId: florist });
-    }).then(result => {
-      floristIds = result.filter(r => {
-        if (r.obj[0])
-          return r.obj[0]._id
-      }).map(node => node.obj[0]._id);
-      if (floristIds.length != floristList.length) {
-        floristList.forEach(florist => {
-          if (floristIds.indexOf(florist) == -1)
-            unknowIds.push(florist);
-        });
-      }
-      if (unknowIds.length > 0)
-        throw apiUtils.build500Error(nodeUtil.format(errorConstant.ERROR_NAME_INVALID_INPUT_PARAMETERS, unknowIds.toString(), 'floristList'))
-      return OrderMicroService.FloristAPI_bindFloristsToStore({ storeId: storeId, floristList: floristIds })
+    UserMicroService.StoreAPI_getStoreById({ storeId: storeId }).then(result => {
+      if (!result.obj)
+        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Store"));
+      return UserMicroService.StoreAPI_bindFlorist({ storeId: storeId, floristId: floristId });
     }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
@@ -69,66 +53,56 @@ module.exports = function (ManagerFacadeAPI) {
     })
   }
 
-  ManagerFacadeAPI.remoteMethod('unbindFlorist', {
-    description: "Create florist by userId.",
-    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
-    { arg: 'storeId', type: 'string', required: true, description: "Order Id.", http: { source: 'path' } },
-    { arg: 'floristList', type: ['string'], required: true, description: "Florist Ids.", http: { source: 'body' } }],
+  ManagerFacadeAPI.remoteMethod('unbindFloristToStore', {
+    description: "Unbind a florist to store.",
+    accepts: [{ arg: 'storeId', type: 'string', required: true, description: "Store Id.", http: { source: 'path' } },
+    { arg: 'floristId', type: 'string', required: true, description: "Florist Id.", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
-    http: { path: '/user/:userIdstore/:storeId/unbindFlorist', verb: 'post', status: 200, errorStatus: [500] }
+    http: { path: '/store/:storeId/florist/:floristId/unbindFloristToStore', verb: 'put', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.unbindFlorist = function (userId, storeId, floristList, cb) {
-    var OrderMicroService = loopback.findModel("OrderMicroService");
+  ManagerFacadeAPI.unbindFloristToStore = function (storeId, floristId, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    let floristIds = [];
-    let unknowIds = [];
-    Promise.map(floristList, florist => {
-      return UserMicroService.UserAPI_getUserInfo({ userId: florist });
-    }).then(result => {
-      floristIds = result.filter(r => {
-        if (r.obj[0])
-          return r.obj[0]._id
-      }).map(node => node.obj[0]._id);
-      if (floristIds.length != floristList.length) {
-        floristList.forEach(florist => {
-          if (floristIds.indexOf(florist) == -1)
-            unknowIds.push(florist);
-        });
-      }
-      if (unknowIds.length > 0)
-        throw apiUtils.build500Error(nodeUtil.format(errorConstant.ERROR_NAME_INVALID_INPUT_PARAMETERS, unknowIds.toString(), 'floristList'))
-      return OrderMicroService.FloristAPI_unbindFlorist({ storeId: storeId, floristList: floristIds })
+    UserMicroService.StoreAPI_getStoreById({ storeId: storeId }).then(result => {
+      if (!result.obj)
+        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Store"));
+      return UserMicroService.StoreAPI_unbindFlorist({ storeId: storeId, floristId: floristId });
     }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
-    })
+    });
   }
 
   ManagerFacadeAPI.remoteMethod('assignJobToFlroist', {
-    description: "Create florist by userId.",
+    description: "Assign a job to florist.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
-    { arg: 'orderId', type: 'string', required: true, description: "Order Id.", http: { source: 'path' } },
+    { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id.", http: { source: 'path' } },
     { arg: 'floristId', type: 'string', required: true, description: "Florist Id.", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
-    http: { path: '/user/:userId/order/:orderId/florist/:floristId/assignJobToFlroist', verb: 'post', status: 200, errorStatus: [500] }
+    http: { path: '/user/:userId/transaction/:transactionId/florist/:floristId/assignJobToFlroist', verb: 'put', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.assignJobToFlroist = function (userId, orderId, floristId, cb) {
-    var OrderMicroService = loopback.findModel("OrderMicroService");
-    var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.UserAPI_getUserInfo({ userId: floristId }).then(result => {
-      if (result.obj.length == 0)
+  ManagerFacadeAPI.assignJobToFlroist = function (userId, transactionId, floristId, cb) {
+    let UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.FloristAPI_getFlorist({ floristId: floristId }).then(result => {
+      if (!result.obj)
         throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_CODE_NO_MODEL_FOUND, "Florist"));
-      return OrderMicroService.FloristAPI_assignJobToFlroist({ orderId: orderId, floristId: floristId });
+      return UserMicroService.StoreAPI_getStoreByFlorist({ floristId: floristId });
+    }).then(result => {
+      if (!result.obj)
+        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_CODE_NO_MODEL_FOUND, "Store"));
+      let transaction = {};
+      transaction.floristId = floristId;
+      transaction.storeId = result.obj._id;
+      return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: transaction });
     }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
-    })
+    });
   }
 
   ManagerFacadeAPI.remoteMethod('getFlorist', {
-    description: "Create florist by userId.",
+    description: "Get florist by Id.",
     accepts: [{ arg: 'floristId', type: 'string', required: false, description: "Florist Id.", http: { source: 'query' } },
     { arg: 'storeId', type: 'string', required: false, description: "Store Id.", http: { source: 'query' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
@@ -177,5 +151,79 @@ module.exports = function (ManagerFacadeAPI) {
         let dailyOrder = orders.filter(r => r.florist._id == florist);
       })
     })
+  }
+
+  ManagerFacadeAPI.remoteMethod('batchBindFloristsToStore', {
+    description: "Batch bind florists to store.",
+    accepts: [{ arg: 'data', type: 'object', required: false, description: "{storeId: [floristIds]}", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/batchBindFloristsToStore', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.batchBindFloristsToStore = function (data, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    Promise.map(Object.keys(data), key => {
+      return UserMicroService.StoreAPI_getStoreById({ storeId: key }).then(result => {
+        if (!result.obj)
+          throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Store"));
+        result.obj.florists = data[key];
+        return UserMicroService.StoreAPI_updateStore({ storeId: key, updateData: result.obj });
+      })
+    }).then(() => {
+      cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    })
+  }
+
+  ManagerFacadeAPI.remoteMethod('setStoreManager', {
+    description: "Set a store's Manager.",
+    accepts: [{ arg: 'userId', type: 'string', required: false, description: "Manager Id", http: { source: 'path' } },
+    { arg: 'storeId', type: 'string', required: false, description: "store Id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/user/:userId/store/:storeId/setStoreManager', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.setStoreManager = function (userId, storeId, cb) {
+    let UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.UserAPI_getUserInfo({ userId: userId }).then(result => {
+      if (!result.obj)
+        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "ButchartUser"));
+      return UserMicroService.StoreAPI_getStoreById({ storeId: storeId });
+    }).then(result => {
+      if (!result.obj)
+        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Store"));
+      let store = result.obj;
+      store.managerId = userId;
+      return UserMicroService.StoreAPI_updateStore({ storeId: storeId, updateData: store });
+    }).then(() => {
+      cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('unsetStoreManager', {
+    description: "Unset a store's Manager.",
+    accepts: [{ arg: 'userId', type: 'string', required: false, description: "Manager Id", http: { source: 'path' } },
+    { arg: 'storeId', type: 'string', required: false, description: "store Id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/user/:userId/store/:storeId/setStoreManager', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.unsetStoreManager = function(userId, storeId, cb){
+    let UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.UserAPI_getUserInfo({ userId: userId }).then(result => {
+      if (!result.obj)
+        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "ButchartUser"));
+      return UserMicroService.StoreAPI_getStoreById({ storeId: storeId });
+    }).then(result => {
+      if (!result.obj)
+        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Store"));
+      let store = result.obj;
+      delete store.managerId
+      return UserMicroService.StoreAPI_updateStore({ storeId: storeId, updateData: store });
+    }).then(() => {
+      cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    });
   }
 }

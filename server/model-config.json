@@ -55,6 +55,10 @@
     "dataSource": "userMicroServiceDs",
     "public": false
   },
+  "StatisticsMicroService": {
+    "dataSource": "statisticsMicroServiceDs",
+    "public": false
+  },
   
   
   "SendMessageResponse": {

@@ -15,7 +15,68 @@
   },
   "validations": [],
   "relations": {},
-  "acls": [],
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY",
+      "property": "*"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Admin",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "StoreManager",
+      "permission": "ALLOW",
+      "property": "batchCreateFlorist"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Manager",
+      "permission": "ALLOW",
+      "property": "batchCreateFlorist"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "StoreAdmin",
+      "permission": "ALLOW",
+      "property": "bindFloristToStore"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "StoreAdmin",
+      "permission": "ALLOW",
+      "property": "unbindFloristToStore"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "StoreAdmin",
+      "permission": "ALLOW",
+      "property": "assignJobToFlroist"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "StoreAdmin",
+      "permission": "ALLOW",
+      "property": "getFlorist"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Florist",
+      "permission": "ALLOW",
+      "property": "getFlorist"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Manager",
+      "permission": "ALLOW",
+      "property": "batchBindFloristsToStore"
+    }
+  ],
   "methods": {},
   "mixins": {}
 }
