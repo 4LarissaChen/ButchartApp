@@ -54,10 +54,32 @@ var startBatchAssignJob = function () {
     }).then(() => {
       console.log("Batch assign transaction jop completed.")
       return Promise.resolve();
+    }).catch(err => {
+      console.log(JSON.stringify(err));
+      return Promise.reject();
     });
   }, sched);
 }
 
+var startStatisticsBatchJob = function () {
+  let later = require('later');
+  let ManagerFacadeAPI = loopback.findModel("ManagerFacadeAPI");
+  let florists, transactions;
+  let basic = { h: [4], m: [30] };  //设置每天凌晨执行
+  let composite = [
+    basic
+  ];
+  let sched = {
+    schedules: composite
+  };
+  later.date.localTime();
+  let t = later.setInterval(() => {
+    console.log("Statistics Job Started.");
+    return ManagerFacadeAPI.statisticsBatchJob();
+  }, sched);
+}
+
 module.exports = function (app) {
-  startBatchAssignJob();
+  // startBatchAssignJob();
+  // startStatisticsBatchJob();
 }

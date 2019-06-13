@@ -320,4 +320,26 @@ module.exports = function (WorkspaceFacadeAPI) {
       cb(err, null);
     });
   }
+
+  WorkspaceFacadeAPI.remoteMethod('afterSalesTransaction', {
+    description: "Change transaction's status to afterSales.",
+    accepts: [{ arg: 'customerId', type: 'string', required: true, description: "customer id", http: { source: 'path' } },
+    { arg: 'transactionId', type: 'string', required: true, description: "florist id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
+    http: { path: '/workspace/customer/:customerId/transaction/:transactionId/afterSales', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.afterSalesTransaction = function (customerId, transactionId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
+      let updateData = {
+        status: 'AfterSales',
+        afterSalesDate: moment().local().format('YYYY-MM-DD HH:mm:ss')
+      }
+      return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: updateData });
+    }).then(() => {
+      return cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
 }

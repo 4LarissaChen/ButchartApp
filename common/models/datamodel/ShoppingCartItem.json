@@ -19,6 +19,10 @@
     "quantity": {
       "type": "string",
       "required": true
+    },
+    "price": {
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],

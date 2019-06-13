@@ -50,7 +50,7 @@
     "dataSource": "auth-api",
     "public": false
   },
-  
+
   "UserMicroService": {
     "dataSource": "userMicroServiceDs",
     "public": false

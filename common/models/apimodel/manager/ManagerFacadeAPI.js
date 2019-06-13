@@ -116,41 +116,58 @@ module.exports = function (ManagerFacadeAPI) {
     });
   }
 
-  ManagerFacadeAPI.remoteMethod('batchOrderJob', {
+  ManagerFacadeAPI.remoteMethod('statisticsBatchJob', {
     description: "Create florist by userId.",
-    accepts: [{ arg: 'option', type: 'string', required: true, description: "day/month/year", http: { source: 'query' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
-    http: { path: '/manager/batchOrderJob', verb: 'get', status: 200, errorStatus: [500] }
+    http: { path: '/manager/statisticsBatchJob', verb: 'get', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.batchOrderJob = function (cb) {
-    var OrderMicroService = loopback.findModel("OrderMicroService");
+  ManagerFacadeAPI.statisticsBatchJob = function (cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
     var UserMicroService = loopback.findModel("UserMicroService");
     let time = moment().local().format('YYYY-MM-DD HH:mm:ss');
-    let week = time.day() == 1 ? true : false;
-    let month = time.date() == 1 ? true : false;
-    let season = time.subtract(1, 'd').quarter() < time.add(1, 'd').quarter() ? true : false;
-    let year = time.dayOfYear() == 1 ? true : false;
-    let condition = {};
-    let orderResult = {}
-    let floristIds;
+    let weekly = moment(time).day() == 1 ? true : false;
+    let monthly = moment(time).date() == 1 ? true : false;
+    let seasonal = moment(time).subtract(1, 'd').quarter() < moment(time).add(1, 'd').quarter() ? true : false;
+    let annual = moment(time).dayOfYear() == 1 ? true : false;
+    let condition = {}, transactions = {}, florists, stores;
     condition.userId = "";
     condition.status = "payed";
-    condition.fromDate = time.subtract(1, 'd').split(' ')[0] + " 00:00:00";
-    condition.toDate = time.split(' ')[0] + " 23:59:59";
-    OrderMicroService.FloristAPI_getFloristIdList().then(result => {
-      floristIds = result.obj;
-      return UserMicroService.TransactionAPI_searchTransaction({ filter: searchData })
+    condition.fromDate = moment(time).subtract(1, 'd').format('YYYY-MM-DD HH:mm:ss').split(' ')[0] + " 00:00:00";
+    condition.toDate = moment(time).subtract(1, 'd').format('YYYY-MM-DD HH:mm:ss').split(' ')[0] + " 23:59:59";
+
+    UserMicroService.TransactionAPI_searchTransaction({ filter: condition }).then(result => {
+      transactions = result.obj;
+      return UserMicroService.FloristAPI_getFloristList();
     }).then(result => {
-      orderResult.day = result.obj;
-      return Promise.map(orderResult.day, transaction => {
-        return OrderMicroService.OrderAPI_findOrderById({ orderId: transaction.orderId })
+      florists = result.obj;
+      return UserMicroService.StoreAPI_getAllStores();
+    }).then(result => {
+      stores = result.obj;
+      return Promise.map(florists, florist => {
+        return UserMicroService.UserAPI_getUserInfo({ userId: florist.userId }).then(result => {
+          //deal with userInfo (To be refined)
+          florist.userInfo = result.obj;
+          return florist;
+        });
       });
     }).then(result => {
-      let orders = result.obj;
-      floristIds.forEach(florist => {
-        let dailyOrder = orders.filter(r => r.florist._id == florist);
-      })
-    })
+      florists = result;
+      let data = {
+        florists: florists,
+        stores: stores,
+        transactions: transactions,
+        weekly: weekly,
+        monthly: monthly,
+        seasonal: seasonal,
+        annual: annual,
+        date: time
+      };
+      return StatisticsMicroService.StatisticsAPI_statisticsBatchJob({ data: data });
+    }).then(() => {
+      cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    });
   }
 
   ManagerFacadeAPI.remoteMethod('batchBindFloristsToStore', {
@@ -208,7 +225,7 @@ module.exports = function (ManagerFacadeAPI) {
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/user/:userId/store/:storeId/setStoreManager', verb: 'put', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.unsetStoreManager = function(userId, storeId, cb){
+  ManagerFacadeAPI.unsetStoreManager = function (userId, storeId, cb) {
     let UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.UserAPI_getUserInfo({ userId: userId }).then(result => {
       if (!result.obj)

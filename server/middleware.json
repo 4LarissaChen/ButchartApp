@@ -13,7 +13,9 @@
     },
     "helmet#xssFilter": {},
     "helmet#frameguard": {
-      "params": { "action": "deny" }
+      "params": [
+        "deny"
+      ]
     },
     "helmet#hsts": {
       "params": {
@@ -26,7 +28,8 @@
     "helmet#noSniff": {},
     "helmet#noCache": {
       "enabled": false
-    }
+    },
+    "loopback-context#per-request": {}
   },
   "session": {},
   "auth": {},
