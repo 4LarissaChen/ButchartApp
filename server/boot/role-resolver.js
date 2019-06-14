@@ -10,6 +10,28 @@ module.exports = function (app) {
 
 	}
 
+		//用户本人
+		Role.registerResolver('UserSelf', function (role, context, cb) {
+
+			var UserMicroService = loopback.findModel("UserMicroService");
+	
+			if (context.modelName != "WorkspaceFacadeAPI")  reject(cb);
+			if (!context.remotingContext.args.userId)  reject(cb);
+	
+			var userId = context.remotingContext.args.userId;
+			UserMicroService.UserAPI_getUserInfo({ userId: userId }).then(result => {
+				var userId = result.obj._id;
+				if (userId == context.accessToken.userId) {
+					cb(null, true);
+				} else {
+					 reject(cb);
+				}
+			}).catch(function (err) {
+				 reject(cb);
+			})
+	
+		});
+
 	//订单所有者
 	Role.registerResolver('TransactionOwner', function (role, context, cb) {
 

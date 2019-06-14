@@ -129,6 +129,24 @@
       "principalId": "Customer",
       "permission": "ALLOW",
       "property": "updateCustomerPool"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "getFlorists"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "UserSelf",
+      "permission": "ALLOW",
+      "property": "updateUserInfo"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "UserSelf",
+      "permission": "ALLOW",
+      "property": "getUserInfo"
     }
   ],
   "methods": {},

@@ -79,6 +79,17 @@ var startStatisticsBatchJob = function () {
   }, sched);
 }
 
+var starlocationBatchJob = function () {
+  let later = require('later');
+  let ManagerFacadeAPI = loopback.findModel("ManagerFacadeAPI");
+  let sched = later.parse.text('at 4:30 am every 1 day of the month');
+  later.date.localTime();
+  let t = later.setInterval(() => {
+    console.log("Statistics Job Started.");
+    return ManagerFacadeAPI.statisticsLocationBatchJob();
+  }, sched);
+}
+
 module.exports = function (app) {
   // startBatchAssignJob();
   // startStatisticsBatchJob();

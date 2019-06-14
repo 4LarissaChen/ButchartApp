@@ -117,7 +117,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('statisticsBatchJob', {
-    description: "Create florist by userId.",
+    description: "start transaction statistics batch job.",
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/statisticsBatchJob', verb: 'get', status: 200, errorStatus: [500] }
   });
@@ -162,7 +162,7 @@ module.exports = function (ManagerFacadeAPI) {
         annual: annual,
         date: time
       };
-      return StatisticsMicroService.StatisticsAPI_statisticsBatchJob({ data: data });
+      return StatisticsMicroService.StatisticsAPI_statisticsTransactionsBatchJob({ data: data });
     }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
@@ -237,6 +237,43 @@ module.exports = function (ManagerFacadeAPI) {
       let store = result.obj;
       delete store.managerId
       return UserMicroService.StoreAPI_updateStore({ storeId: storeId, updateData: store });
+    }).then(() => {
+      cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('statisticsLocationBatchJob', {
+    description: "Start location statistics batch job.",
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/statisticsLocationBatchJob', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.statisticsLocationBatchJob = function (cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    var UserMicroService = loopback.findModel("UserMicroService");
+    let time = moment().local().format('YYYY-MM-DD HH:mm:ss');
+    let transactions;
+    let condition = {};
+    condition.userId = "";
+    condition.status = "payed";
+    condition.fromDate = moment().local().month(moment(time).month() - 1).format('YYYY-MM-DD HH:mm:ss').toString().split(" ")[0] + "00:00:00";
+    condition.toDate = moment().local().dayOfYear(moment(time).dayOfYear() - 1).format('YYYY-MM-DD HH:mm:ss').toString().split(" ")[0] + "23:59:59";
+    UserMicroService.TransactionAPI_searchTransaction({ filter: condition }).then(result => {
+      transactions = result.obj;
+      return Promise.map(transactions, tran => {
+        return UserMicroService.AddressAPI_getAddressById({ addressId: tran.addressId }).then(result => {
+          delete tran.addressId;
+          tran.address = result.obj[0];
+          return;
+        });
+      });
+    }).then(() => {
+      let data = {
+        date: time,
+        transactions: transactions
+      }
+      return StatisticsMicroService.StatisticsAPI_statisticsLocationBatchJob({ data: data });
     }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {

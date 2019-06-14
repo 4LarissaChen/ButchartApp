@@ -16,7 +16,8 @@
       "../common/models/apimodel/workspace/apiSpec/addAddress/request",
       "../common/models/apimodel/workspace/apiSpec/modifyAddress/request",
       "../common/models/apimodel/workspace/apiSpec/addLogisticsInfo/request",
-      "../common/models/apimodel/workspace/apiSpec/getShoppingList/response"
+      "../common/models/apimodel/workspace/apiSpec/getShoppingList/response",
+      "../common/models/apimodel/workspace/apiSpec/updateUserInfo/request"
     ],
     "mixins": [
       "loopback/common/mixins",
@@ -105,6 +106,10 @@
     "public": true
   },
   "CreateTransactionRequest_Logistics": {
+    "dataSource": "db",
+    "public": true
+  },
+  "UpdateUserInfoRequest": {
     "dataSource": "db",
     "public": true
   },

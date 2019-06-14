@@ -12,7 +12,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   apiUtils.disableRelatedModelRemoteMethod(WorkspaceFacadeAPI);
 
   WorkspaceFacadeAPI.remoteMethod('login', {
-    description: "User login.",
+    description: "用户登陆（注册）.",
     accepts: [{ arg: 'tel', type: 'string', required: true, description: "User telephone number", http: { source: 'query' } },
     { arg: 'code', type: 'string', required: true, description: "Verification code", http: { source: 'query' } }],
     returns: { arg: 'isSuccess', type: 'ButchartUser', description: "", root: true },
@@ -29,7 +29,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   };
 
   WorkspaceFacadeAPI.remoteMethod('sendMessage', {
-    description: "Get message verification code.",
+    description: "发送验证码短信.",
     accepts: [{ arg: 'tel', type: 'string', required: true, description: "User telephone number", http: { source: 'path' } },
     { arg: 'operation', type: 'string', required: true, description: "login/register/changePwd/idVerification", http: { source: 'query' } }],
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
@@ -45,7 +45,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('createTransaction', {
-    description: "Create an order.",
+    description: "创建订单.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
     { arg: 'orderParams', type: 'CreateTransactionRequest', required: true, description: "detail order properties", http: { source: 'body' } }],
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
@@ -62,7 +62,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('payTransaction', {
-    description: "Pay an order.",
+    description: "支付订单.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
     { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } }],
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
@@ -83,7 +83,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('getUserOwnedTransactions', {
-    description: "Get user owend transactions.",
+    description: "获取用户所有的订单.",
     accepts: { arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
     returns: { arg: 'resp', type: ['Transaction'], description: '', root: true },
     http: { path: '/workspace/user/:userId/getUserOwnedTransactions', verb: 'get', status: 200, errorStatus: 500 }
@@ -98,7 +98,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('searchTransaction', {
-    description: "Search user's history transactions.",
+    description: "搜索用户历史订单.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
     { arg: 'searchData', type: 'SearchTransactionRequest', required: true, description: "search parameters", http: { source: 'body' } }],
     returns: { arg: 'resp', type: ['Transaction'], description: "", root: true },
@@ -115,7 +115,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('addLogisticsInfo', {
-    description: "Add logistics information of an order.",
+    description: "添加订单运单信息.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
     { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id.", http: { source: 'path' } },
     { arg: 'logisticsData', type: 'AddLogisticsInfoRequest', required: true, description: "logistics information.", http: { source: 'body' } }],
@@ -139,7 +139,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('addAddress', {
-    description: "Add shipping address.",
+    description: "添加地址.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
     { arg: 'addressData', type: 'AddAddressRequest', required: true, description: "Address information", http: { source: 'body' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: "", root: true },
@@ -155,7 +155,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('modifyAddress', {
-    description: "Modify shipping address.",
+    description: "更新用户地址信息.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "UserId Id", http: { source: 'path' } },
     { arg: 'addressData', type: 'ModifyAddressRequest', required: true, description: "Address information", http: { source: 'body' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: "", root: true },
@@ -171,7 +171,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('getAddress', {
-    description: "Get shipping address.",
+    description: "获取用户地址列表.",
     accepts: { arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
     returns: { arg: 'resp', type: ['Address'], description: "", root: true },
     http: { path: '/workspace/user/:userId/getAddress', verb: 'get', status: 200, errorStatus: 500 }
@@ -186,7 +186,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('deleteAddress', {
-    description: "Delete shipping address.",
+    description: "删除用户地址.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
     { arg: 'addressIds', type: ['string'], required: true, description: "Address Ids", http: { source: 'body' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: "", root: true },
@@ -204,7 +204,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('getProductSeries', {
-    description: "Get product series.",
+    description: "获取所有系列信息.",
     returns: { arg: 'resp', type: ['ProductSeries'], description: "", root: true },
     http: { path: '/workspace/getProductSeries', verb: 'get', status: 200, errorStatus: 500 }
   });
@@ -218,7 +218,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('getProductsBySeries', {
-    description: "Get products by product series Id.",
+    description: "根据系列ID获取商品列表.",
     accepts: { arg: 'seriesId', type: 'string', required: true, description: "product series id", http: { source: 'path' } },
     returns: { arg: 'resp', type: ['Product'], description: 'is success or not', root: true },
     http: { path: '/workspace/seriesId/:seriesId/getProductsBySeries', verb: 'get', status: 200, errorStatus: [500] }
@@ -233,7 +233,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('getStoreList', {
-    description: "Get stores.",
+    description: "获取所有Store列表.",
     returns: { arg: 'resp', type: ['Store'], description: 'is success or not', root: true },
     http: { path: '/workspace/getStoreList', verb: 'get', status: 200, errorStatus: [500] }
   });
@@ -247,7 +247,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('addToShoppingList', {
-    description: "Add a product to user's shopping cart.",
+    description: "添加商品到购物车.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User id", http: { source: 'path' } },
     { arg: 'productId', type: 'string', required: true, description: "Product id", http: { source: 'path' } },
     { arg: 'quantity', type: 'string', required: true, description: "Quantity", http: { source: 'query' } }],
@@ -264,7 +264,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('updateShoppingList', {
-    description: "Update user's shopping cart.",
+    description: "更新用户的购物车.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User id", http: { source: 'path' } },
     { arg: 'data', type: ['ShoppingCartItem'], required: true, description: "Shopping items list.", http: { source: 'body' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
@@ -280,7 +280,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('getShoppingList', {
-    description: "Get user's shopping cart items.",
+    description: "获取用户的购物车.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User id", http: { source: 'path' } }],
     returns: { arg: 'resp', type: ['GetShoppingListResponse'], description: 'is success or not', root: true },
     http: { path: '/workspace/user/:userId/getShoppingList', verb: 'get', status: 200, errorStatus: [500] }
@@ -306,7 +306,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('updateCustomerPool', {
-    description: "Update florist customer pool.",
+    description: "更新花艺师客户池.",
     accepts: [{ arg: 'floristId', type: 'string', required: true, description: "florist id", http: { source: 'path' } },
     { arg: 'customerId', type: 'string', required: true, description: "customer id", http: { source: 'path' } }],
     returns: { arg: 'resp', type: ['GetShoppingListResponse'], description: 'is success or not', root: true },
@@ -322,7 +322,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   }
 
   WorkspaceFacadeAPI.remoteMethod('afterSalesTransaction', {
-    description: "Change transaction's status to afterSales.",
+    description: "将订单转入售后状态.",
     accepts: [{ arg: 'customerId', type: 'string', required: true, description: "customer id", http: { source: 'path' } },
     { arg: 'transactionId', type: 'string', required: true, description: "florist id", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
@@ -338,6 +338,60 @@ module.exports = function (WorkspaceFacadeAPI) {
       return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: updateData });
     }).then(() => {
       return cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getFlorists', {
+    description: "获取所有花艺师.",
+    returns: { arg: 'resp', type: ['ButchartUser'], description: '', root: true },
+    http: { path: '/workspace/getFlorists', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getFlorists = function (cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.FloristAPI_getFloristList().then(result => {
+      return Promise.map(result.obj, florist => {
+        return UserMicroService.UserAPI_getUserInfo({ userId: florist.userId }).then(result => {
+          result.obj.florist = florist;
+          return result.obj;
+        });
+      }).then(result => {
+        cb(null, result);
+      })
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getUserInfo', {
+    description: "获取用户信息.",
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "用户Id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: 'ButchartUser', description: '', root: true },
+    http: { path: '/workspace/user/:userId/getUserInfo', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getUserInfo = function (userId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.UserAPI_getUserInfo({ userId: userId }).then(result => {
+      if (!result.obj)
+        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "ButchartUser"));
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('updateUserInfo', {
+    description: "更新用户信息.",
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "用户Id", http: { source: 'path' } },
+    { arg: 'userData', type: 'UpdateUserInfoRequest', required: true, description: "用户数据", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: ['ButchartUser'], description: '', root: true },
+    http: { path: '/workspace/user/:userId/updateUserInfo', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.updateUserInfo = function (userId, userData, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.UserAPI_updateUserInfo({ userId: userId, userData: userData }).then(() => {
+      cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
     });
