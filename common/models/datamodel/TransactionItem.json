@@ -13,11 +13,15 @@
       "required": true
     },
     "quantity": {
-      "type": "string",
+      "type": "number",
       "required": true
     },
     "comment": {
       "type": "string"
+    },
+    "price": {
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],

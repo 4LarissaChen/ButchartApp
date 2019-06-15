@@ -54,8 +54,14 @@ module.exports = function (WorkspaceFacadeAPI) {
 
   WorkspaceFacadeAPI.createTransaction = function (userId, orderParams, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
+    var transactionId;
     UserMicroService.TransactionAPI_createTransaction({ userId: userId, createData: orderParams }).then(result => {
-      cb(null, { createdId: result.obj.createdId });
+      transactionId = result.obj.createdId;
+      if (orderParams.floristId && orderParams.floristId != "")
+        return UserMicroService.UserAPI_setDefaultFlorist({ userId: userId, floristId: orderParams.floristId })
+      return;
+    }).then(() => {
+      cb(null, { createdId: transactionId });
     }).catch(err => {
       cb(err, null);
     })
