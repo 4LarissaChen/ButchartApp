@@ -10,9 +10,6 @@
 		"trackingId": {
 			"type": "string",
 			"required": true
-		},
-		"logisticsCompany": {
-			"type": "string"
 		}
 	},
 	"validations": [],
