@@ -21,7 +21,7 @@
       "type": "string"
     },
     "quantity": {
-      "type": "string"
+      "type": "number"
     },
     "addDate": {
       "type": "string"
