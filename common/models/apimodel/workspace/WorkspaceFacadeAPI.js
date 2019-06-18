@@ -256,13 +256,17 @@ module.exports = function (WorkspaceFacadeAPI) {
     description: "添加商品到购物车.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User id", http: { source: 'path' } },
     { arg: 'productId', type: 'string', required: true, description: "Product id", http: { source: 'path' } },
-    { arg: 'quantity', type: 'string', required: true, description: "Quantity", http: { source: 'query' } }],
+    { arg: 'quantity', type: 'number', required: true, description: "Quantity", http: { source: 'query' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
     http: { path: '/workspace/user/:userId/product/:productId/addToShoppingList', verb: 'put', status: 200, errorStatus: [500] }
   });
   WorkspaceFacadeAPI.addToShoppingList = function (userId, productId, quantity, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.UserAPI_addToShoppingList({ userId: userId, productId: productId, quantity: quantity }).then(result => {
+    UserMicroService.ProductAPI_getProductById({ productId: productId }).then(result => {
+      if (result.obj == null)
+        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Product"));
+      return UserMicroService.UserAPI_addToShoppingList({ userId: userId, productId: productId, quantity: quantity, price: result.obj.price })
+    }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
