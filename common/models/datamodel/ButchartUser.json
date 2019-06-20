@@ -33,15 +33,15 @@
 			"required": false
 		},
 		"birthday": {
-			"type": "date",
+			"type": "string",
 			"required": false
 		},
 		"lastLoginDate": {
-			"type": "date",
+			"type": "string",
 			"required": false
 		},
 		"registerDate": {
-			"type": "date",
+			"type": "string",
 			"required": false
 		},
 		"shoppingCart":{

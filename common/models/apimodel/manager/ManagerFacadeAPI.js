@@ -130,13 +130,12 @@ module.exports = function (ManagerFacadeAPI) {
     let seasonal = moment(time).subtract(1, 'd').quarter() < moment(time).add(1, 'd').quarter() ? true : false;
     let annual = moment(time).dayOfYear() == 1 ? true : false;
     let condition = {}, transactions = {}, florists, stores;
-    condition.userId = "";
-    condition.status = "payed";
+    let data = {};
     condition.fromDate = moment(time).subtract(1, 'd').format('YYYY-MM-DD HH:mm:ss').split(' ')[0] + " 00:00:00";
     condition.toDate = moment(time).subtract(1, 'd').format('YYYY-MM-DD HH:mm:ss').split(' ')[0] + " 23:59:59";
-
     UserMicroService.TransactionAPI_searchTransaction({ filter: condition }).then(result => {
       transactions = result.obj;
+      transactions = transactions.filter(t => t.status != "Unpayed");
       return UserMicroService.FloristAPI_getFloristList();
     }).then(result => {
       florists = result.obj;
@@ -152,7 +151,10 @@ module.exports = function (ManagerFacadeAPI) {
       });
     }).then(result => {
       florists = result;
-      let data = {
+      return UserMicroService.UserAPI_getUserCount({});
+    }).then(result => {
+      data = {
+        totalCustomerCount: result.obj.resp,
         florists: florists,
         stores: stores,
         transactions: transactions,
@@ -256,7 +258,7 @@ module.exports = function (ManagerFacadeAPI) {
     let transactions;
     let condition = {};
     condition.userId = "";
-    condition.status = "payed";
+    condition.status = ["AfterSales", "Send"];
     condition.fromDate = moment().local().month(moment(time).month() - 1).format('YYYY-MM-DD HH:mm:ss').toString().split(" ")[0] + "00:00:00";
     condition.toDate = moment().local().dayOfYear(moment(time).dayOfYear() - 1).format('YYYY-MM-DD HH:mm:ss').toString().split(" ")[0] + "23:59:59";
     UserMicroService.TransactionAPI_searchTransaction({ filter: condition }).then(result => {
@@ -278,6 +280,60 @@ module.exports = function (ManagerFacadeAPI) {
       cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('assignTransactionsBatchJob', {
+    description: "Start assign transaction batch job.",
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/assignTransactionsBatchJob', verb: 'post', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.assignTransactionsBatchJob = function (cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    let unassignTrans = [];
+    let overviewLog;
+    let promiseArray = [], stores = [];
+    let resp = {};
+    return UserMicroService.TransactionAPI_getUnassignedTransactions().then(result => {
+      unassignTrans = result.obj;
+      return StatisticsMicroService.StatisticsAPI_getBatchOverViewLog();
+    }).then(result => {
+      overviewLog = result.obj;
+      return UserMicroService.StoreAPI_getAllStores();
+    }).then(result => {
+      stores = result.obj;
+      if (!overviewLog)
+        overviewLog = { unassignedTransactionCount: 0 }
+      let yushu = overviewLog.unassignedTransactionCount % 10;
+      for (let i = 0; i < unassignTrans.length; i++) {
+        for (let key in settings.transactionAssignStrategy) {
+          let min = settings.transactionAssignStrategy[key][0] * 10;
+          let max = settings.transactionAssignStrategy[key][1] * 10;
+          if (min < (yushu + i) % 10 <= max) {
+            let store = stores.find(s => s.name.indexOf(key) != -1);
+            unassignTrans[i].storeId = store._id;
+            overviewLog.unassignedTransactionCount++;
+            promiseArray.push(UserMicroService.TransactionAPI_updateTransaction({
+              transactionId: unassignTrans[i]._id, updateData: unassignTrans[i]
+            }));
+            break;
+          }
+        }
+      }
+      return Promise.all(promiseArray);
+    }).then(result => {
+      if (!overviewLog._id)
+        overviewLog._id = apiUtils.generateShortId("OverViewLog");
+      if (unassignTrans.length > 0)
+        return StatisticsMicroService.StatisticsAPI_updateOverViewLog({ data: overviewLog });
+      return;
+    }).then(() => {
+      console.log("Batch assign transaction jop completed.")
+      return Promise.resolve();
+    }).catch(err => {
+      console.log(JSON.stringify(err));
+      return Promise.reject();
     });
   }
 }

@@ -14,7 +14,7 @@
       "required": false
     },
     "birthday": {
-      "type": "date",
+      "type": "string",
       "required": false
     },
     "email": {

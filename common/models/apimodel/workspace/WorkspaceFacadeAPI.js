@@ -78,7 +78,7 @@ module.exports = function (WorkspaceFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     //TBD third part pay.
     let updateData = {
-      status: "payed",
+      status: "Payed",
       payedDate: moment().local().format('YYYY-MM-DD HH:mm:ss')
     }
     UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: updateData }).then(() => {
@@ -132,9 +132,10 @@ module.exports = function (WorkspaceFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
       let transaction = result.obj;
-      logisticsData = logisticsData.__data;
+      logisticsData = logisticsData.toObject();
       for (let key in logisticsData)
         transaction.logistics[key] = logisticsData[key];
+      transaction.status = "Send";
       transaction.logistics.sendDate = moment().local().format('YYYY-MM-DD HH:mm:ss');
       return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: transaction });
     }).then(() => {
@@ -334,19 +335,13 @@ module.exports = function (WorkspaceFacadeAPI) {
   WorkspaceFacadeAPI.remoteMethod('afterSalesTransaction', {
     description: "将订单转入售后状态.",
     accepts: [{ arg: 'customerId', type: 'string', required: true, description: "customer id", http: { source: 'path' } },
-    { arg: 'transactionId', type: 'string', required: true, description: "florist id", http: { source: 'path' } }],
+    { arg: 'transactionId', type: 'string', required: true, description: "transaction Id", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
     http: { path: '/workspace/customer/:customerId/transaction/:transactionId/afterSales', verb: 'put', status: 200, errorStatus: [500] }
   });
   WorkspaceFacadeAPI.afterSalesTransaction = function (customerId, transactionId, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
-      let updateData = {
-        status: 'AfterSales',
-        afterSalesDate: moment().local().format('YYYY-MM-DD HH:mm:ss')
-      }
-      return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: updateData });
-    }).then(() => {
+    UserMicroService.TransactionAPI_changeTransactionToAfterSales({ transactionId: transactionId }).then(() => {
       return cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
@@ -402,6 +397,37 @@ module.exports = function (WorkspaceFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.UserAPI_updateUserInfo({ userId: userId, userData: userData }).then(() => {
       cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('addAfterSalesLogisticsInfo', {
+    description: "添加售后订单运单号.",
+    accepts: [{ arg: 'transactionId', type: 'string', required: true, description: "订单 Id", http: { source: 'path' } },
+    { arg: 'trackingId', type: 'string', required: true, description: "运单号", http: { source: 'query' } }],
+    returns: { arg: 'resp', type: ['ButchartUser'], description: '', root: true },
+    http: { path: '/workspace/transaction/:transactionId/addAfterSalesLogisticsInfo', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.addAfterSalesLogisticsInfo = function (transactionId, trackingId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.TransactionAPI_addAfterSalesLogisticsInfo({ transactionId: transactionId, trackingId: trackingId }).then(result => {
+      cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getProductById', {
+    description: "通过productId获取详情.",
+    accepts: [{ arg: 'productId', type: 'string', required: true, description: "产品 Id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: ['ButchartUser'], description: '', root: true },
+    http: { path: '/workspace/product/:productId/getProductById', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getProductById = function (productId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.ProductAPI_getProductById({ productId: productId }).then(result => {
+      cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
     });
