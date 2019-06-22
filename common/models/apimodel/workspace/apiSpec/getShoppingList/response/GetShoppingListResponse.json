@@ -25,6 +25,9 @@
     },
     "addDate": {
       "type": "string"
+    },
+    "type": {
+      "type": "string"
     }
   },
   "validation": [],

@@ -1,5 +1,5 @@
 {
-  "name": "Product",
+  "name": "Logistics",
   "base": "Model",
   "idInjection": true,
   "strict": false,
@@ -7,26 +7,21 @@
     "validateUpsert": true
   },
   "properties": {
-    "_id": {
-      "type": "string",
-      "id": true,
-      "required": true
-    },
-    "name": {
+    "id": false,
+    "deliveryMethod": {
       "type": "string",
       "required": true
     },
-    "description": {
+    "trackingId": {
       "type": "string",
       "required": false
     },
-    "price": {
+    "freight": {
       "type": "number",
       "required": true
     },
-    "type": {
-      "type": "string",
-      "required": true
+    "date": {
+      "type": "string"
     }
   },
   "validations": [],

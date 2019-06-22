@@ -147,6 +147,12 @@
       "principalId": "UserSelf",
       "permission": "ALLOW",
       "property": "getUserInfo"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "getDeliveryMethods"
     }
   ],
   "methods": {},

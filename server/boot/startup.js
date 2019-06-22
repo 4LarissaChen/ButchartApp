@@ -14,7 +14,7 @@ var startBatchAssignJob = function () {
   var later = require('later');
   var sched = later.parse.text('every 5 min');
   var t = later.setInterval(() => {
-    console.log("Batch assign transaction jop starting...");
+    console.log("Batch assign transaction jop starting at" + moment().local().format('YYYY-MM-DD HH:mm:ss') + "...");
     return ManagerFacadeAPI.assignTransactionsBatchJob();
   }, sched);
 }
@@ -22,7 +22,7 @@ var startBatchAssignJob = function () {
 var startStatisticsBatchJob = function () {
   let later = require('later');
   let ManagerFacadeAPI = loopback.findModel("ManagerFacadeAPI");
-  let basic = { h: [23], m: [3] };  //设置每天凌晨执行
+  let basic = { h: [22], m: [7] };  //设置每天凌晨执行
   let composite = [
     basic
   ];
@@ -39,7 +39,7 @@ var startStatisticsBatchJob = function () {
 var starlocationBatchJob = function () {
   let later = require('later');
   let ManagerFacadeAPI = loopback.findModel("ManagerFacadeAPI");
-  let sched = later.parse.text('at 9:16 pm every day');//at 4:30 am every 1 day of the month
+  let sched = later.parse.text('at 1:36 pm');//at 4:30 am every 1 day of the month  //on the last day of the month
   later.date.localTime();
   let t = later.setInterval(() => {
     console.log("Statistics Job Started.");

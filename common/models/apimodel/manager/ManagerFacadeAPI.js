@@ -166,9 +166,9 @@ module.exports = function (ManagerFacadeAPI) {
       };
       return StatisticsMicroService.StatisticsAPI_statisticsTransactionsBatchJob({ data: data });
     }).then(() => {
-      cb(null, { isSuccess: true });
+      return { isSuccess: true };
     }).catch(err => {
-      cb(err, null);
+      return Promise.reject(err);
     });
   }
 
@@ -251,18 +251,16 @@ module.exports = function (ManagerFacadeAPI) {
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/statisticsLocationBatchJob', verb: 'get', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.statisticsLocationBatchJob = function (cb) {
+  ManagerFacadeAPI.statisticsLocationBatchJob = function () {
     var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
     var UserMicroService = loopback.findModel("UserMicroService");
     let time = moment().local().format('YYYY-MM-DD HH:mm:ss');
     let transactions;
     let condition = {};
-    condition.userId = "";
-    condition.status = ["AfterSales", "Send"];
     condition.fromDate = moment().local().month(moment(time).month() - 1).format('YYYY-MM-DD HH:mm:ss').toString().split(" ")[0] + "00:00:00";
     condition.toDate = moment().local().dayOfYear(moment(time).dayOfYear() - 1).format('YYYY-MM-DD HH:mm:ss').toString().split(" ")[0] + "23:59:59";
     UserMicroService.TransactionAPI_searchTransaction({ filter: condition }).then(result => {
-      transactions = result.obj;
+      transactions = result.obj.filter(t => ["AfterSales", "Send"].indexOf(t.status) != -1);
       return Promise.map(transactions, tran => {
         return UserMicroService.AddressAPI_getAddressById({ addressId: tran.addressId }).then(result => {
           delete tran.addressId;
@@ -277,9 +275,9 @@ module.exports = function (ManagerFacadeAPI) {
       }
       return StatisticsMicroService.StatisticsAPI_statisticsLocationBatchJob({ data: data });
     }).then(() => {
-      cb(null, { isSuccess: true });
+      return Promise.resolve({ isSuccess: true });
     }).catch(err => {
-      cb(err, null);
+      return Promise.reject(err);
     });
   }
 

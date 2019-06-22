@@ -53,8 +53,8 @@
 		"comment": {
 			"type": "string"
 		},
-		"feadback": {
-			"type": "string"
+		"feedback": {
+			"type": ["Feedback"]
 		},
 		"productList": {
 			"type": ["ShoppingCartItem"],

@@ -1,32 +1,36 @@
 {
-  "name": "Product",
-  "base": "Model",
+  "name": "Feedback",
+	"base": "PersistedModel",
   "idInjection": true,
-  "strict": false,
+  "strict": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
     "_id": {
-      "type": "string",
-      "id": true,
-      "required": true
+      "type": "string"
     },
-    "name": {
+    "comment": {
       "type": "string",
       "required": true
     },
-    "description": {
-      "type": "string",
-      "required": false
+    "pics": {
+      "type": ["string"]
     },
-    "price": {
-      "type": "number",
-      "required": true
-    },
-    "type": {
+    "beginDate": {
       "type": "string",
       "required": true
+    },
+    "finishDate": {
+      "type": "string",
+      "required": true
+    },
+    "appraisal": {
+      "type": "string",
+      "required": true
+    },
+    "logistics":{
+      "type":"Logistics"
     }
   },
   "validations": [],

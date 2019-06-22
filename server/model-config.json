@@ -141,5 +141,17 @@
   "TransactionItem": {
     "dataSource": "db",
     "public": true
+  },
+  "Feedback": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Logistics": {
+    "dataSource": "db",
+    "public": true
+  },
+  "DeliveryMethod": {
+    "dataSource": "db",
+    "public": true
   }
 }

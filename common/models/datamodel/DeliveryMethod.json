@@ -1,6 +1,6 @@
 {
-  "name": "Product",
-  "base": "Model",
+  "name": "DeliveryMethod",
+  "base": "PersistedModel",
   "idInjection": true,
   "strict": false,
   "options": {
@@ -8,24 +8,20 @@
   },
   "properties": {
     "_id": {
+			"type": "string",
+			"id": true,
+			"required": true
+		},
+    "deliveryMethod": {
       "type": "string",
-      "id": true,
       "required": true
     },
-    "name": {
-      "type": "string",
-      "required": true
-    },
-    "description": {
-      "type": "string",
+    "config": {
+      "type": "object",
       "required": false
     },
-    "price": {
-      "type": "number",
-      "required": true
-    },
-    "type": {
-      "type": "string",
+    "freight": {
+      "type": "object",
       "required": true
     }
   },

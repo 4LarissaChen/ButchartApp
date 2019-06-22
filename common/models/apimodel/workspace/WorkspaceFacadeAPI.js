@@ -305,6 +305,7 @@ module.exports = function (WorkspaceFacadeAPI) {
           item.name = result.obj.name;
           item.description = result.obj.description;
           item.price = result.obj.price;
+          item.type = result.obj.type;
           resp.push(item);
           return Promise.resolve();
         });
@@ -427,6 +428,20 @@ module.exports = function (WorkspaceFacadeAPI) {
   WorkspaceFacadeAPI.getProductById = function (productId, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.ProductAPI_getProductById({ productId: productId }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getDeliveryMethods', {
+    description: "获取所有配送方式以及配置.",
+    returns: { arg: 'resp', type: ['DeliveryMethod'], description: '', root: true },
+    http: { path: '/workspace/getDeliveryMethods', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getDeliveryMethods = function (cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.TransactionAPI_getDeliveryMethods({}).then(result => {
       cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
