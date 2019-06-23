@@ -12,7 +12,7 @@ var apiUtils = require('../utils/apiUtils.js');
 var startBatchAssignJob = function () {
   let ManagerFacadeAPI = loopback.findModel("ManagerFacadeAPI");
   var later = require('later');
-  var sched = later.parse.text('every 15 min');
+  var sched = later.parse.text('every 30 min');
   var t = later.setInterval(() => {
     console.log("Batch assign transaction jop starting at" + moment().local().format('YYYY-MM-DD HH:mm:ss') + "...");
     return ManagerFacadeAPI.assignTransactionsBatchJob();
@@ -22,7 +22,7 @@ var startBatchAssignJob = function () {
 var startStatisticsBatchJob = function () {
   let later = require('later');
   let ManagerFacadeAPI = loopback.findModel("ManagerFacadeAPI");
-  let basic = { h: [22], m: [9] };  //设置每天凌晨执行
+  let basic = { h: [0], m: [30] };  //设置每天凌晨执行
   let composite = [
     basic
   ];
