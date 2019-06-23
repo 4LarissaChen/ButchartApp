@@ -5,7 +5,7 @@ var nodeUtil = require('util');
 var moment = require('moment');
 var Promise = require('bluebird');
 var errorConstant = require('../../../../server/constants/errorConstants.js');
-
+var messageUtils = require('../../../../server/utils/messageUtils.js');
 var apiUtils = require('../../../../server/utils/apiUtils.js');
 
 module.exports = function (WorkspaceFacadeAPI) {
@@ -21,10 +21,12 @@ module.exports = function (WorkspaceFacadeAPI) {
 
   WorkspaceFacadeAPI.login = function (tel, code, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.UserAPI_login({ tel: tel, code: code }).then(result => {
+    messageUtils.querySentMessage(tel, code).then(() => {
+      return UserMicroService.UserAPI_login({ tel: tel, code: code })
+    }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
-      cb(err.obj, null);
+      cb(err, null);
     })
   };
 
@@ -36,12 +38,13 @@ module.exports = function (WorkspaceFacadeAPI) {
     http: { path: '/workspace/sendMessage/:tel', verb: 'post', status: 200, errorStatus: 500 }
   });
   WorkspaceFacadeAPI.sendMessage = function (tel, operation, cb) {
-    var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.UserAPI_sendMessage({ tel: tel, operation: operation }).then(result => {
-      cb(null, result.obj)
+    let code = ("00000" + Math.floor(Math.random() * 1000000)).substr(-6);
+    messageUtils.sendMessage(tel, code, operation).then(result => {
+      let resp = { code: code };
+      cb(null, resp);
     }).catch(err => {
       cb(err, null);
-    })
+    });
   }
 
   WorkspaceFacadeAPI.remoteMethod('createTransaction', {
@@ -134,7 +137,8 @@ module.exports = function (WorkspaceFacadeAPI) {
       let transaction = result.obj;
       logisticsData = logisticsData.toObject();
       for (let key in logisticsData)
-        transaction.logistics[key] = logisticsData[key];
+        if (logisticsData[key] != null)
+          transaction.logistics[key] = logisticsData[key];
       transaction.status = "Send";
       transaction.logistics.sendDate = moment().local().format('YYYY-MM-DD HH:mm:ss');
       return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: transaction });
@@ -203,6 +207,12 @@ module.exports = function (WorkspaceFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     Promise.map(addressIds, addressId => {
       return UserMicroService.AddressAPI_deleteAddress({ addressId: addressId });
+    }).then(() => {
+      return UserMicroService.UserAPI_getUserInfo({ userId: userId });
+    }).then(result => {
+      if (addressIds.indexOf(result.obj.userProfile) != -1)
+        return UserMicroService.UserAPI_deleteUserDefaultAddress({ userId: userId });
+      return Promise.resolve();
     }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
@@ -336,13 +346,14 @@ module.exports = function (WorkspaceFacadeAPI) {
   WorkspaceFacadeAPI.remoteMethod('afterSalesTransaction', {
     description: "将订单转入售后状态.",
     accepts: [{ arg: 'customerId', type: 'string', required: true, description: "customer id", http: { source: 'path' } },
-    { arg: 'transactionId', type: 'string', required: true, description: "transaction Id", http: { source: 'path' } }],
+    { arg: 'transactionId', type: 'string', required: true, description: "transaction Id", http: { source: 'path' } },
+    { arg: 'data', type: 'AfterSalesTransactionRequest', required: true, description: "info", http: { source: 'body' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
     http: { path: '/workspace/customer/:customerId/transaction/:transactionId/afterSales', verb: 'put', status: 200, errorStatus: [500] }
   });
-  WorkspaceFacadeAPI.afterSalesTransaction = function (customerId, transactionId, cb) {
+  WorkspaceFacadeAPI.afterSalesTransaction = function (customerId, transactionId, data, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.TransactionAPI_changeTransactionToAfterSales({ transactionId: transactionId }).then(() => {
+    UserMicroService.TransactionAPI_changeTransactionToAfterSales({ transactionId: transactionId, data: data }).then(() => {
       return cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);

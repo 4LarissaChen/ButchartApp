@@ -1,0 +1,44 @@
+{
+  "name": "OverViewLog",
+  "base": "Model",
+  "idInjection": true,
+  "strict": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "_id": {
+      "type": "string",
+      "id": true,
+      "required": false
+    },
+    "totalCustomerCount": {
+      "type": "number",
+      "required": false
+    },
+    "totalTransactionCount": {
+      "type": "number",
+      "required": false
+    },
+    "afterSalesTransactionCount": {
+      "type": "number",
+      "required": false
+    },
+    "unassignedTransactionCount": {
+      "type": "number",
+      "required": false
+    },
+    "date": {
+      "type": "string",
+      "required": true
+    },
+    "priceRange": {
+      "type": "PriceRange",
+      "required": false
+    },
+    "totalFreight": {
+      "type": "number",
+      "required": false
+    }
+  }
+}

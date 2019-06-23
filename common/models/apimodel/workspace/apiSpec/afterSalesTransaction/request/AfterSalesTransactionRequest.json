@@ -1,0 +1,26 @@
+{
+  "name": "AfterSalesTransactionRequest",
+  "base": "Model",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": false,
+    "comment": {
+      "type": "string",
+      "required": true
+    },
+    "pics": {
+      "type": ["string"]
+    },
+    "appraisal": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

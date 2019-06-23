@@ -153,6 +153,12 @@
       "principalId": "Customer",
       "permission": "ALLOW",
       "property": "getDeliveryMethods"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "afterSalesTransaction"
     }
   ],
   "methods": {},

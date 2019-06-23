@@ -75,6 +75,24 @@
       "principalId": "Manager",
       "permission": "ALLOW",
       "property": "batchBindFloristsToStore"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "TransactionEditor",
+      "permission": "ALLOW",
+      "property": "addCommentToTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "FloristSelf",
+      "permission": "ALLOW",
+      "property": "getFloristStatisticsLog"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "StoreAdmin",
+      "permission": "ALLOW",
+      "property": "getStoreStatisticsLog"
     }
   ],
   "methods": {},

@@ -1,0 +1,44 @@
+{
+  "name": "FloristStatisticsEntry",
+  "base": "Model",
+  "idInjection": true,
+  "strict": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "_id": {
+      "type": "string",
+      "id": true,
+      "required": false
+    },
+    "floristId": {
+      "type": "string",
+      "required": true
+    },
+    "transactionSum": {
+      "type": "number",
+      "required": true
+    },
+    "productSum": {
+      "type": "number",
+      "required": true
+    },
+    "afterSalesTransactions": {
+      "type": "number",
+      "required": true
+    },
+    "totalAmount": {
+      "type": "number",
+      "required": true
+    },
+    "type": {
+      "type": "string",
+      "required": true
+    },
+    "date": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "DeliveryMethod",
-  "base": "PersistedModel",
+  "base": "Model",
   "idInjection": true,
   "strict": false,
   "options": {

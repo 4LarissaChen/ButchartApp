@@ -1,0 +1,37 @@
+{
+  "name": "LocationStatisticsEntry",
+  "base": "Model",
+  "idInjection": false,
+  "strict": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "_id": {
+      "type": "string",
+      "id": true,
+      "required": false
+    },
+    "province": {
+      "type": "object",
+      "required": false
+    },
+    "hangzhou": {
+      "type": "object",
+      "required": false
+    },
+    "type": {
+      "type": "string",
+      "required": true
+    },
+    "date": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+  },
+  "acls": [],
+  "methods": {}
+}

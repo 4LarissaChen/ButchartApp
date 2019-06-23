@@ -1,0 +1,32 @@
+{
+  "name": "PriceRange",
+  "base": "Model",
+  "idInjection": false,
+  "strict": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "_id": false,
+    "0_100": {
+      "type": "number",
+      "required": true
+    },
+    "100_300": {
+      "type": "number",
+      "required": true
+    },
+    "300_500": {
+      "type": "number",
+      "required": true
+    },
+    "500_1000": {
+      "type": "number",
+      "required": true
+    },
+    "1000_*": {
+      "type": "number",
+      "required": true
+    }
+  }
+}

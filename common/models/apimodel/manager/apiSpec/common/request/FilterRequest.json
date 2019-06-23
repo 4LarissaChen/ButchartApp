@@ -1,0 +1,27 @@
+{
+  "name": "FilterRequest",
+  "base": "Model",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": false,
+    "type": {
+      "type": "string",
+      "required": true
+    },
+    "fromDate": {
+      "type": "string",
+      "required": true
+    },
+    "toDate": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

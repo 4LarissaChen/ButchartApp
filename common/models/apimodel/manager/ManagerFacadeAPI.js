@@ -14,7 +14,7 @@ module.exports = function (ManagerFacadeAPI) {
   apiUtils.disableRelatedModelRemoteMethod(ManagerFacadeAPI);
 
   ManagerFacadeAPI.remoteMethod('batchCreateFlorist', {
-    description: "Batch create florist accounts.",
+    description: "批量创建花艺师账号.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "Admin user id", http: { source: 'path' } },
     { arg: 'floristIds', type: 'string', required: true, description: "Florist Ids", http: { source: 'body' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
@@ -34,7 +34,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('bindFloristToStore', {
-    description: "Bind a florist to store.",
+    description: "将单个花艺师指派给店铺.",
     accepts: [{ arg: 'storeId', type: 'string', required: true, description: "Store Id.", http: { source: 'path' } },
     { arg: 'floristId', type: 'string', required: true, description: "Florist Id.", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
@@ -54,7 +54,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('unbindFloristToStore', {
-    description: "Unbind a florist to store.",
+    description: "解除花艺师绑定的店铺.",
     accepts: [{ arg: 'storeId', type: 'string', required: true, description: "Store Id.", http: { source: 'path' } },
     { arg: 'floristId', type: 'string', required: true, description: "Florist Id.", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
@@ -74,7 +74,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('assignJobToFlroist', {
-    description: "Assign a job to florist.",
+    description: "指派订单给花艺师.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
     { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id.", http: { source: 'path' } },
     { arg: 'floristId', type: 'string', required: true, description: "Florist Id.", http: { source: 'path' } }],
@@ -86,13 +86,8 @@ module.exports = function (ManagerFacadeAPI) {
     UserMicroService.FloristAPI_getFlorist({ floristId: floristId }).then(result => {
       if (!result.obj)
         throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_CODE_NO_MODEL_FOUND, "Florist"));
-      return UserMicroService.StoreAPI_getStoreByFlorist({ floristId: floristId });
-    }).then(result => {
-      if (!result.obj)
-        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_CODE_NO_MODEL_FOUND, "Store"));
       let transaction = {};
       transaction.floristId = floristId;
-      transaction.storeId = result.obj._id;
       return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: transaction });
     }).then(result => {
       cb(null, result.obj);
@@ -102,7 +97,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('getFlorist', {
-    description: "Get florist by Id.",
+    description: "根据id获取花艺师信息.",
     accepts: [{ arg: 'floristId', type: 'string', required: false, description: "Florist Id.", http: { source: 'query' } },
     { arg: 'storeId', type: 'string', required: false, description: "Store Id.", http: { source: 'query' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
@@ -117,7 +112,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('statisticsBatchJob', {
-    description: "start transaction statistics batch job.",
+    description: "订单信息统计任务.",
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/statisticsBatchJob', verb: 'get', status: 200, errorStatus: [500] }
   });
@@ -173,7 +168,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('batchBindFloristsToStore', {
-    description: "Batch bind florists to store.",
+    description: "设置花艺师所属店铺.",
     accepts: [{ arg: 'data', type: 'object', required: false, description: "{storeId: [floristIds]}", http: { source: 'body' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/batchBindFloristsToStore', verb: 'put', status: 200, errorStatus: [500] }
@@ -195,7 +190,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('setStoreManager', {
-    description: "Set a store's Manager.",
+    description: "设置user为店长.",
     accepts: [{ arg: 'userId', type: 'string', required: false, description: "Manager Id", http: { source: 'path' } },
     { arg: 'storeId', type: 'string', required: false, description: "store Id", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
@@ -221,11 +216,11 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('unsetStoreManager', {
-    description: "Unset a store's Manager.",
+    description: "解除店长权限.",
     accepts: [{ arg: 'userId', type: 'string', required: false, description: "Manager Id", http: { source: 'path' } },
     { arg: 'storeId', type: 'string', required: false, description: "store Id", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
-    http: { path: '/manager/user/:userId/store/:storeId/setStoreManager', verb: 'put', status: 200, errorStatus: [500] }
+    http: { path: '/manager/user/:userId/store/:storeId/unsetStoreManager', verb: 'put', status: 200, errorStatus: [500] }
   });
   ManagerFacadeAPI.unsetStoreManager = function (userId, storeId, cb) {
     let UserMicroService = loopback.findModel("UserMicroService");
@@ -247,7 +242,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('statisticsLocationBatchJob', {
-    description: "Start location statistics batch job.",
+    description: "统计订单地点分布任务.",
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/statisticsLocationBatchJob', verb: 'get', status: 200, errorStatus: [500] }
   });
@@ -282,7 +277,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('assignTransactionsBatchJob', {
-    description: "Start assign transaction batch job.",
+    description: "订单自动分配任务.",
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/assignTransactionsBatchJob', verb: 'post', status: 200, errorStatus: [500] }
   });
@@ -332,6 +327,85 @@ module.exports = function (ManagerFacadeAPI) {
     }).catch(err => {
       console.log(JSON.stringify(err));
       return Promise.reject();
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('addCommentToTransaction', {
+    description: "给订单加备注信息（给包月伴手礼用）.",
+    accepts: [{ arg: 'floristId', type: 'string', required: false, description: "Florist Id", http: { source: 'path' } },
+    { arg: 'transactionId', type: 'string', required: false, description: "transactio Id", http: { source: 'path' } },
+    { arg: 'comment', type: 'string', required: false, description: "commnet", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/florist/:floristId/transaction/:transactionId/addCommentToTransaction', verb: 'post', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.addCommentToTransaction = function (floristId, transactionId, comment, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.TransactionAPI_addCommentToTransaction({ transactionId: transactionId, comment: comment }).then(() => {
+      cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('getFloristStatisticsLog', {
+    description: "获取花艺师报表信息.",
+    accepts: [{ arg: 'floristId', type: 'string', required: true, description: "Florist id.", http: { source: 'path' } },
+    { arg: 'filter', type: 'FilterRequest', required: true, description: "Query option.", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: ['FloristStatisticsEntry'], description: '', root: true },
+    http: { path: '/manager/florist/:floristId/getFloristStatisticsLog', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.getFloristStatisticsLog = function (floristId, filter, cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    filter = apiUtils.parseToObject(filter);
+    StatisticsMicroService.StatisticsAPI_getFloristStatisticsLog({ floristId: floristId, filter: filter }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('getBatchOverViewLog', {
+    description: "获取统计总计信息",
+    returns: { arg: 'resp', type: 'OverViewLog', description: '', root: true },
+    http: { path: '/manager/getBatchOverViewLog', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.getBatchOverViewLog = function (cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    StatisticsMicroService.StatisticsAPI_getBatchOverViewLog({}).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('getStoreStatisticsLog', {
+    description: "获取店铺报表信息.",
+    accepts: [{ arg: 'storeId', type: 'string', required: true, description: "Store id.", http: { source: 'path' } },
+    { arg: 'filter', type: 'FilterRequest', required: true, description: "Query option.", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: ['StoreStatisticsEntry'], description: '', root: true },
+    http: { path: '/manager/store/:storeId/getStoreStatisticsLog', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.getStoreStatisticsLog = function (storeId, filter, cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    StatisticsMicroService.StatisticsAPI_getStoreStatisticsLog({ storeId, storeId, filter: filter }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('getLocationStatisticsLog', {
+    description: "获取订单地域分布报表信息.",
+    accepts: [{ arg: 'filter', type: 'FilterRequest', required: true, description: "Query option.", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: ['LocationStatisticsEntry'], description: '', root: true },
+    http: { path: '/manager/getLocationStatisticsLog', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.getLocationStatisticsLog = function (filter, cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    StatisticsMicroService.StatisticsAPI_getLocationStatisticsLog({ filter: filter }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
     });
   }
 }

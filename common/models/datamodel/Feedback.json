@@ -1,6 +1,6 @@
 {
   "name": "Feedback",
-	"base": "PersistedModel",
+	"base": "Model",
   "idInjection": true,
   "strict": true,
   "options": {

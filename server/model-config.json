@@ -17,7 +17,9 @@
       "../common/models/apimodel/workspace/apiSpec/modifyAddress/request",
       "../common/models/apimodel/workspace/apiSpec/addLogisticsInfo/request",
       "../common/models/apimodel/workspace/apiSpec/getShoppingList/response",
-      "../common/models/apimodel/workspace/apiSpec/updateUserInfo/request"
+      "../common/models/apimodel/workspace/apiSpec/updateUserInfo/request",
+      "../common/models/apimodel/workspace/apiSpec/afterSalesTransaction/request",
+      "../common/models/apimodel/manager/apiSpec/common/request"
     ],
     "mixins": [
       "loopback/common/mixins",
@@ -151,6 +153,34 @@
     "public": true
   },
   "DeliveryMethod": {
+    "dataSource": "db",
+    "public": true
+  },
+  "AfterSalesTransactionRequest": {
+    "dataSource": "db",
+    "public": true
+  },
+  "FilterRequest": {
+    "dataSource": "db",
+    "public": true
+  },
+  "LocationStatisticsEntry": {
+    "dataSource": "db",
+    "public": true
+  },
+  "StoreStatisticsEntry": {
+    "dataSource": "db",
+    "public": true
+  },
+  "FloristStatisticsEntry": {
+    "dataSource": "db",
+    "public": true
+  },
+  "OverViewLog": {
+    "dataSource": "db",
+    "public": true
+  },
+  "PriceRange": {
     "dataSource": "db",
     "public": true
   }

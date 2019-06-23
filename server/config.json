@@ -23,5 +23,24 @@
     "庆春店": [0, 0.6],
     "钱江店": [0.6, 0.9],
     "银泰店": [0.9, 1]
+  },
+  "features": {
+    "SMSConfig": {
+      "accessKey": {
+        "accessKeyId": "LTAIHBlHjdK1vWV0",
+        "secretAccessKey": "cSrp6SlKRd4JbBRerlQuXvToTc6JRM"
+      },
+      "messageTemplate": {
+        "login": "SMS_154425487",
+        "changePwd": "SMS_154425484",
+        "register": "SMS_154425485",
+        "idVerification": "SMS_154425488"
+      }
+    },
+    "wechatPay": {
+      "appid": "wx66142d5363835ef3",
+      "mch_id": "1315332101",
+      "key": "26FC68EC2E5AF61772E86DCA2824AB7A"
+    }
   }
 }
