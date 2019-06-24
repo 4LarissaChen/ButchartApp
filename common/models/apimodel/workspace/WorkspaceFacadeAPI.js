@@ -276,7 +276,13 @@ module.exports = function (WorkspaceFacadeAPI) {
     UserMicroService.ProductAPI_getProductById({ productId: productId }).then(result => {
       if (result.obj == null)
         throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Product"));
-      return UserMicroService.UserAPI_addToShoppingList({ userId: userId, productId: productId, quantity: quantity, price: result.obj.price })
+      let addData = {
+        productId: productId,
+        quantity: quantity,
+        price: result.obj.price,
+        type: result.obj.type
+      };
+      return UserMicroService.UserAPI_addToShoppingList({ userId: userId, addData: addData })
     }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
