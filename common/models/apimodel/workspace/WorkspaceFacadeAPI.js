@@ -50,21 +50,26 @@ module.exports = function (WorkspaceFacadeAPI) {
   WorkspaceFacadeAPI.remoteMethod('createTransaction', {
     description: "创建订单.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
-    { arg: 'orderParams', type: 'CreateTransactionRequest', required: true, description: "detail order properties", http: { source: 'body' } }],
+    { arg: 'orderParams', type: 'CreateTransactionRequest', required: true, description: "detail order properties", http: { source: 'body' } },
+    { arg: 'req', type: 'object', http: function (ctx) { return ctx.req; } }],
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
     http: { path: '/workspace/user/:userId/createTransaction', verb: 'post', status: 200, errorStatus: 500 }
   });
 
-  WorkspaceFacadeAPI.createTransaction = function (userId, orderParams, cb) {
+  WorkspaceFacadeAPI.createTransaction = function (userId, orderParams, req, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     var transactionId;
+    var ip = req.headers['x-forwarded-for'] || // 判断是否有反向代理 IP
+      req.connection.remoteAddress || // 判断 connection 的远程 IP
+      req.socket.remoteAddress || // 判断后端的 socket 的 IP
+      req.connection.socket.remoteAddress;
     UserMicroService.TransactionAPI_createTransaction({ userId: userId, createData: orderParams }).then(result => {
       transactionId = result.obj.createdId;
       if (orderParams.floristId && orderParams.floristId != "")
         return UserMicroService.UserAPI_setDefaultFlorist({ userId: userId, floristId: orderParams.floristId })
       return;
     }).then(() => {
-      cb(null, { createdId: transactionId });
+      cb(null, { createdId: transactionId, ip: ip });
     }).catch(err => {
       cb(err, null);
     })
