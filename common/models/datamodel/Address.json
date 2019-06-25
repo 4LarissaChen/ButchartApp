@@ -20,6 +20,10 @@
 			"type": "string",
 			"required": true
 		},
+		"sex": {
+			"type": "string",
+			"required": true
+		},
 		"tel": {
 			"type": "string",
 			"required": true

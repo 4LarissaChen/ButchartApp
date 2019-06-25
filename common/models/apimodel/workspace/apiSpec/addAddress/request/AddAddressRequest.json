@@ -13,6 +13,9 @@
 			"type": "string",
 			"required": true
 		},
+		"sex": {
+			"type": "string"
+		},
 		"province": {
 			"type": "string"
 		},
