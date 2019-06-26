@@ -12,6 +12,10 @@
       "type": "string",
       "required": true
     },
+    "name": {
+      "type": "string",
+      "required": true
+    },
     "quantity": {
       "type": "number",
       "required": true

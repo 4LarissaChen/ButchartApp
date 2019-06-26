@@ -140,7 +140,7 @@ module.exports = function (WorkspaceFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
       let transaction = result.obj;
-      logisticsData = logisticsData.toObject();
+      logisticsData = apiUtils.parseToObject(logisticsData);
       for (let key in logisticsData)
         if (logisticsData[key] != null)
           transaction.logistics[key] = logisticsData[key];
