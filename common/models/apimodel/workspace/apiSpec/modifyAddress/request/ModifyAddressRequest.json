@@ -9,9 +9,25 @@
 			"type": "string",
 			"required": true
 		},
-		"address": {
+		"name": {
 			"type": "string",
 			"required": true
+		},
+		"sex": {
+			"type": "string",
+			"required": true
+		},
+		"province":{
+			"type":"string"
+		},
+		"city":{
+			"type":"string"
+		},
+		"district":{
+			"type":"string"
+		},
+		"street": {
+			"type": "string"
 		},
 		"tel": {
 			"type": "string",
