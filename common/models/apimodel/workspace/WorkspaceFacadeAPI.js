@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 var errorConstant = require('../../../../server/constants/errorConstants.js');
 var messageUtils = require('../../../../server/utils/messageUtils.js');
 var apiUtils = require('../../../../server/utils/apiUtils.js');
+var WechatPayService = require('./internalService/WechatPayService.js');
 
 module.exports = function (WorkspaceFacadeAPI) {
   apiUtils.disableRelatedModelRemoteMethod(WorkspaceFacadeAPI);
@@ -82,9 +83,11 @@ module.exports = function (WorkspaceFacadeAPI) {
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
     http: { path: '/workspace/user/:userId/transactionId/:transactionId/payTransaction', verb: 'put', status: 200, errorStatus: 500 }
   });
-  WorkspaceFacadeAPI.payTransaction = function (userId, transactionId, cb) {
+  WorkspaceFacadeAPI.payTransaction = function (userId, transactionId, ip, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
+    var wechatPayService = new WechatPayService();
     //TBD third part pay.
+    
     let updateData = {
       status: "Payed",
       payedDate: moment().local().format('YYYY-MM-DD HH:mm:ss')

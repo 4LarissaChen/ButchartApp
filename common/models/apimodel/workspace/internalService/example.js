@@ -154,9 +154,7 @@ exports.pay = function (req, res) //微信支付函数
 
   formData += "</xml>";
 
-  request(
-
-    {
+  request({
 
       url: url,
 
