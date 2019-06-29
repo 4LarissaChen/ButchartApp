@@ -104,13 +104,14 @@ module.exports = function (WorkspaceFacadeAPI) {
 
   WorkspaceFacadeAPI.remoteMethod('getUserOwnedTransactions', {
     description: "获取用户所有的订单.",
-    accepts: { arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
+    { arg: 'page', type: 'number', required: false, description: "page", http: { source: 'query' } }],
     returns: { arg: 'resp', type: ['Transaction'], description: '', root: true },
     http: { path: '/workspace/user/:userId/getUserOwnedTransactions', verb: 'get', status: 200, errorStatus: 500 }
   });
-  WorkspaceFacadeAPI.getUserOwnedTransactions = function (userId, cb) {
+  WorkspaceFacadeAPI.getUserOwnedTransactions = function (userId, page, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.TransactionAPI_searchTransaction({ filter: { userId: userId } }).then(result => {
+    UserMicroService.TransactionAPI_getUserOwnedTransactions({ userId: userId, page: page }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
@@ -120,14 +121,15 @@ module.exports = function (WorkspaceFacadeAPI) {
   WorkspaceFacadeAPI.remoteMethod('searchTransaction', {
     description: "搜索用户历史订单.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
-    { arg: 'searchData', type: 'SearchTransactionRequest', required: true, description: "search parameters", http: { source: 'body' } }],
+    { arg: 'searchData', type: 'SearchTransactionRequest', required: true, description: "search parameters", http: { source: 'body' } },
+    { arg: 'page', type: 'number', required: false, description: "page", http: { source: 'query' } }],
     returns: { arg: 'resp', type: ['Transaction'], description: "", root: true },
     http: { path: '/workspace/user/:userId/searchTransactions', verb: 'post', status: 200, errorStatus: 500 }
   });
-  WorkspaceFacadeAPI.searchTransaction = function (userId, searchData, cb) {
+  WorkspaceFacadeAPI.searchTransaction = function (userId, searchData, page, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     searchData.userId = userId;
-    UserMicroService.TransactionAPI_searchTransaction({ filter: searchData }).then(result => {
+    UserMicroService.TransactionAPI_searchTransaction({ filter: searchData, page: page }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
       cb(err, null);

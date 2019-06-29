@@ -71,19 +71,6 @@ class WechatPayService {
     formData += "<trade_type>MWEB</trade_type>"; //类型APP
     formData += "<sign>" + self.generatePaySignment(attach, body, nonce_str, notify_url, out_trade_no, ip, total_fee, 'MWEB') + "</sign>";
     formData += "</xml>";
-    // request({
-    //   url: url,
-    //   method: 'POST',
-    //   body: formData
-    // }, function (err, response, body) {
-    //   if (!err && response.statusCode == 200) {
-    //     console.log(body);
-    //     var parser = new xml2js.Parser({ trim: true, explicitArray: false, explicitRoot: false });//解析签名结果xml转json
-    //     parser.parseString(body, function (err, result) {
-    //       return result;
-    //     });
-    //   }
-    // });
     let option = {
       method: 'POST',
       url: url,
