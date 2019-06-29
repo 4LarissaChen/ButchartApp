@@ -1,7 +1,7 @@
 var request = require('request');
 var xml2js = require('xml2js');
 var fs = require('fs');
-var settings = JSON.parse(fs.readFileSync('G://Projects//ButchartApp//server//config.json')).features.wechatPay;
+var settings = JSON.parse(fs.readFileSync(global.appRoot + 'server/config.json')).features.wechatPay;
 var crypto = require('crypto');
 var rp = require('request-promise');
 
