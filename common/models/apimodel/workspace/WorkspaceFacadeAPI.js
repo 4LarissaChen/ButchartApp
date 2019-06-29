@@ -70,7 +70,10 @@ module.exports = function (WorkspaceFacadeAPI) {
         return UserMicroService.UserAPI_setDefaultFlorist({ userId: userId, floristId: orderParams.floristId })
       return;
     }).then(() => {
-      cb(null, { createdId: transactionId, ip: ip });
+      let wechatPayService = new WechatPayService();
+      return wechatPayService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip));
+    }).then(result => {
+      cb(null, { createdId: transactionId, resp: result });
     }).catch(err => {
       cb(err, null);
     })
@@ -87,7 +90,7 @@ module.exports = function (WorkspaceFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     var wechatPayService = new WechatPayService();
     //TBD third part pay.
-    
+
     let updateData = {
       status: "Payed",
       payedDate: moment().local().format('YYYY-MM-DD HH:mm:ss')

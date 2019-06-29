@@ -232,7 +232,7 @@ module.exports = function (ManagerFacadeAPI) {
       if (!result.obj)
         throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Store"));
       let store = result.obj;
-      delete store.managerId
+      delete store.managerId;
       return UserMicroService.StoreAPI_updateStore({ storeId: storeId, updateData: store });
     }).then(() => {
       cb(null, { isSuccess: true });
