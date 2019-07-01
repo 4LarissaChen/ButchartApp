@@ -86,7 +86,7 @@ module.exports = function (WorkspaceFacadeAPI) {
     returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
     http: { path: '/workspace/user/:userId/transactionId/:transactionId/payTransaction', verb: 'put', status: 200, errorStatus: 500 }
   });
-  WorkspaceFacadeAPI.payTransaction = function (userId, transactionId, ip, cb) {
+  WorkspaceFacadeAPI.payTransaction = function (userId, transactionId, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     var wechatPayService = new WechatPayService();
     //TBD third part pay.
