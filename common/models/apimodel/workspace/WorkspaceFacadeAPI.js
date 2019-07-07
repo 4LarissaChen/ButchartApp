@@ -128,7 +128,6 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.searchTransaction = function (userId, searchData, page, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    searchData.userId = userId;
     UserMicroService.TransactionAPI_searchTransaction({ filter: searchData, page: page }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
@@ -136,6 +135,22 @@ module.exports = function (WorkspaceFacadeAPI) {
     })
   }
 
+  WorkspaceFacadeAPI.remoteMethod('searchTransactionWithAddress', {
+    description: "搜索用户历史订单(返回地址详情).",
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
+    { arg: 'searchData', type: 'SearchTransactionRequest', required: true, description: "search parameters", http: { source: 'body' } },
+    { arg: 'page', type: 'number', required: false, description: "page", http: { source: 'query' } }],
+    returns: { arg: 'resp', type: ['Transaction'], description: "", root: true },
+    http: { path: '/workspace/user/:userId/searchTransactionWithAddress', verb: 'post', status: 200, errorStatus: 500 }
+  });
+  WorkspaceFacadeAPI.searchTransactionWithAddress = function (userId, searchData, page, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.TransactionAPI_searchTransactionWithAddress({ filter: searchData, page: page }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    })
+  }
   WorkspaceFacadeAPI.remoteMethod('addLogisticsInfo', {
     description: "添加订单运单信息.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
@@ -473,6 +488,21 @@ module.exports = function (WorkspaceFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.TransactionAPI_getDeliveryMethods({}).then(result => {
       cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getAddressById', {
+    description: "通过ID获取配送地址详情.",
+    accepts: [{ arg: 'addressId', type: 'string', required: true, description: "Address Id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: 'Address', description: '', root: true },
+    http: { path: '/workspace/address/:addressId/address', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getAddressById = function (addressId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.AddressAPI_getAddressById({ addressId: addressId }).then(result => {
+      cb(null, result.obj[0]);
     }).catch(err => {
       cb(err, null);
     });

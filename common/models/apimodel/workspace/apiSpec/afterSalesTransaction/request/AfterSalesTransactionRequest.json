@@ -9,7 +9,7 @@
     "id": false,
     "comment": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "pics": {
       "type": ["string"]

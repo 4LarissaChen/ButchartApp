@@ -60,6 +60,12 @@
     },
     {
       "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "searchTransactionWithAddress"
+    },
+    {
+      "principalType": "ROLE",
       "principalId": "Florist",
       "permission": "ALLOW",
       "property": "addLogisticsInfo"
@@ -165,6 +171,30 @@
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "getProductById"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "getAddressById"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Florist",
+      "permission": "ALLOW",
+      "property": "getAddressById"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Manager",
+      "permission": "ALLOW",
+      "property": "getAddressById"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Admin",
+      "permission": "ALLOW",
+      "property": "getAddressById"
     }
   ],
   "methods": {},
