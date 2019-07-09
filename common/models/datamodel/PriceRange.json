@@ -7,7 +7,7 @@
     "validateUpsert": true
   },
   "properties": {
-    "_id": false,
+    "id": false,
     "0_100": {
       "type": "number",
       "required": true
