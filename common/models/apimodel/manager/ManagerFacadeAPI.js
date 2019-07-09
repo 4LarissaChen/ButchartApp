@@ -417,17 +417,8 @@ module.exports = function (ManagerFacadeAPI) {
   });
   ManagerFacadeAPI.getAllStoreStatisticsLogs = function (filter, cb) {
     var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
-    var UserMicroService = loopback.findModel("UserMicroService");
-    let resp = {}
-    UserMicroService.StoreAPI_getAllStores().then(result => {
-      return Promise.map(result.obj, store => {
-        return StatisticsMicroService.StatisticsAPI_getStoreStatisticsLog({ storeId: store._id, filter: filter }).then(result => {
-          resp[store._id] = result.obj;
-          return Promise.resolve();
-        });
-      });
-    }).then(() => {
-      cb(null, resp);
+    StatisticsMicroService.StatisticsAPI_getStoreStatisticsLog({ storeId: "*", filter: filter }).then(result => {
+      cb(null, result.obj[0]);
     }).catch(err => {
       cb(err, null);
     });
