@@ -412,13 +412,13 @@ module.exports = function (ManagerFacadeAPI) {
   ManagerFacadeAPI.remoteMethod('getAllStoreStatisticsLogs', {
     description: "获取所有门店报表信息.",
     accepts: [{ arg: 'filter', type: 'FilterRequest', required: true, description: "Query option.", http: { source: 'body' } }],
-    returns: { arg: 'resp', type: ['LocationStatisticsEntry'], description: '', root: true },
+    returns: { arg: 'resp', type: ['StoreStatisticsEntry'], description: '', root: true },
     http: { path: '/manager/getAllStoreStatisticsLogs', verb: 'put', status: 200, errorStatus: [500] }
   });
   ManagerFacadeAPI.getAllStoreStatisticsLogs = function (filter, cb) {
     var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
     StatisticsMicroService.StatisticsAPI_getStoreStatisticsLog({ storeId: "*", filter: filter }).then(result => {
-      cb(null, result.obj[0]);
+      cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
     });
