@@ -111,6 +111,25 @@ module.exports = function (ManagerFacadeAPI) {
     });
   }
 
+  ManagerFacadeAPI.remoteMethod('getCustomerPool', {
+    description: "获取花艺师客户池.",
+    accepts: [{ arg: 'floristId', type: 'string', required: true, description: "florist id", http: { source: 'path' } }],
+    returns: { arg: 'customerPool', type: ['ButchartUser'], description: 'is success or not', root: true },
+    http: { path: '/manager/florist/:floristId/customerPool', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.getCustomerPool = function (floristId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.FloristAPI_getCustomerPool({ floristId: floristId }).then(result => {
+      return Promise.map(result.obj.customerPool, customerId => {
+        return UserMicroService.UserAPI_getUserInfo({ userId: customerId }).then(result => result.obj);
+      })
+    }).then(result => {
+      cb(null, result);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
   ManagerFacadeAPI.remoteMethod('statisticsBatchJob', {
     description: "订单信息统计任务.",
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
@@ -410,7 +429,7 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('getAllStoreStatisticsLogs', {
-    description: "获取所有门店报表信息.",
+    description: "获取所有门店统计信息.",
     accepts: [{ arg: 'filter', type: 'FilterRequest', required: true, description: "Query option.", http: { source: 'body' } }],
     returns: { arg: 'resp', type: ['StoreStatisticsEntry'], description: '', root: true },
     http: { path: '/manager/getAllStoreStatisticsLogs', verb: 'put', status: 200, errorStatus: [500] }
@@ -419,6 +438,29 @@ module.exports = function (ManagerFacadeAPI) {
     var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
     StatisticsMicroService.StatisticsAPI_getStoreStatisticsLog({ storeId: "*", filter: filter }).then(result => {
       cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+  ManagerFacadeAPI.remoteMethod('getAllFloristStatisticsLogs', {
+    description: "获取所有花艺师统计信息.",
+    accepts: [{ arg: 'filter', type: 'FilterRequest', required: true, description: "Query option.", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: 'object', description: '', root: true },
+    http: { path: '/manager/getAllFloristStatisticsLogs', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.getAllFloristStatisticsLogs = function (filter, cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    var UserMicroService = loopback.findModel("UserMicroService");
+    var resp = {};
+    UserMicroService.FloristAPI_getFloristList().then(result => {
+      return Promise.map(result.obj, florist => {
+        return StatisticsMicroService.StatisticsAPI_getFloristStatisticsLog({ floristId: florist.userId, filter: filter }).then(result => {
+          resp[florist._id] = result.obj;
+          return;
+        });
+      });
+    }).then(() => {
+      cb(null, resp);
     }).catch(err => {
       cb(err, null);
     });

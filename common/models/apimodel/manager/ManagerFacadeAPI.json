@@ -93,6 +93,12 @@
       "principalId": "StoreAdmin",
       "permission": "ALLOW",
       "property": "getStoreStatisticsLog"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "FloristSelf",
+      "permission": "ALLOW",
+      "property": "getCustomerPool"
     }
   ],
   "methods": {},

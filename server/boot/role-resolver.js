@@ -37,7 +37,7 @@ module.exports = function (app) {
 
 		var UserMicroService = loopback.findModel("UserMicroService");
 
-		if (context.modelName != "ManagerFacadeAPI") reject(cb);
+		if (context.modelName != "ManagerFacadeAPI" && context.modelName != "WorkspaceFacadeAPI") reject(cb);
 		if (!context.remotingContext.args.floristId) reject(cb);
 
 		var floristId = context.remotingContext.args.floristId;
