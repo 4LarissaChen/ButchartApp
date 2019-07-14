@@ -13,8 +13,8 @@ var env = process.env.NODE_ENV;
 app.start = function () {
 
   var server = https.createServer({
-    key: fs.readFileSync(global.appRoot + '/key.pem'),
-    cert: fs.readFileSync(global.appRoot + '/cert.pem')
+    key: fs.readFileSync(global.appRoot + '/2473055_www.thebutchart.cn.key'),
+    cert: fs.readFileSync(global.appRoot + '/2473055_www.thebutchart.cn.pem')
   }, app);
 
   server.listen(app.get('port'), function () {
