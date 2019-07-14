@@ -108,7 +108,7 @@
     },
     {
       "principalType": "ROLE",
-      "principalId": "Customer",
+      "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "getStoreList"
     },
