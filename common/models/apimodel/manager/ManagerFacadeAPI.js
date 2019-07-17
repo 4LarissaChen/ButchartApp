@@ -147,7 +147,9 @@ module.exports = function (ManagerFacadeAPI) {
     let data = {};
     condition.fromDate = moment(time).subtract(1, 'd').format('YYYY-MM-DD HH:mm:ss').split(' ')[0] + " 00:00:00";
     condition.toDate = moment(time).subtract(1, 'd').format('YYYY-MM-DD HH:mm:ss').split(' ')[0] + " 23:59:59";
-    UserMicroService.TransactionAPI_searchTransaction({ filter: condition }).then(result => {
+    ManagerFacadeHelper.scheduleFlorists(time).then(() => {
+      return UserMicroService.TransactionAPI_searchTransaction({ filter: condition });
+    }).then(result => {
       transactions = result.obj;
       transactions = transactions.filter(t => t.status != "Unpayed");
       return UserMicroService.FloristAPI_getFloristList();
@@ -186,21 +188,18 @@ module.exports = function (ManagerFacadeAPI) {
     });
   }
 
-  ManagerFacadeAPI.remoteMethod('batchBindFloristsToStore', {
-    description: "设置花艺师所属店铺.",
+  ManagerFacadeAPI.remoteMethod('uploadSchedule', {
+    description: "上传排班表.",
     accepts: [{ arg: 'data', type: 'object', required: false, description: "{storeId: [floristIds]}", http: { source: 'body' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
-    http: { path: '/manager/batchBindFloristsToStore', verb: 'put', status: 200, errorStatus: [500] }
+    http: { path: '/manager/uploadSchedule', verb: 'put', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.batchBindFloristsToStore = function (data, cb) {
-    var UserMicroService = loopback.findModel("UserMicroService");
-    Promise.map(Object.keys(data), key => {
-      return UserMicroService.StoreAPI_getStoreById({ storeId: key }).then(result => {
-        if (!result.obj)
-          throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Store"));
-        result.obj.florists = data[key];
-        return UserMicroService.StoreAPI_updateStore({ storeId: key, updateData: result.obj });
-      })
+  ManagerFacadeAPI.uploadSchedule = function (data, cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    StatisticsMicroService.StatisticsAPI_getBatchOverViewLog().then(result => {
+      let overviewLog = result.obj;
+      overviewLog.schedule = apiUtils.parseToObject(data);
+      StatisticsMicroService.StatisticsAPI_updateOverViewLog({data: overviewLog});
     }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
@@ -454,9 +453,16 @@ module.exports = function (ManagerFacadeAPI) {
     var resp = {};
     UserMicroService.FloristAPI_getFloristList().then(result => {
       return Promise.map(result.obj, florist => {
+        let logEntry;
         return StatisticsMicroService.StatisticsAPI_getFloristStatisticsLog({ floristId: florist.userId, filter: filter }).then(result => {
-          resp[florist._id] = result.obj;
-          return;
+          logEntry = result.obj;
+          return UserMicroService.UserAPI_getUserInfo({ userId: florist.userId }).then(result => {
+            logEntry.forEach(log => {
+              log.fullname = result.obj.fullname;
+            })
+            resp[florist._id] = logEntry;
+            return;
+          })
         });
       });
     }).then(() => {

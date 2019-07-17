@@ -12,6 +12,10 @@
       "id": true,
       "required": false
     },
+    "schedule": {
+      "type": "object",
+      "required": false
+    },
     "totalCustomerCount": {
       "type": "number",
       "required": false

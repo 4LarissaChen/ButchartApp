@@ -5,27 +5,19 @@ var apiUtils = require('../../../../../server/utils/apiUtils.js');
 var nodeUtil = require('util');
 var moment = require('moment');
 
-
-exports.getFlorist = function (floristId, storeId) {
-  var OrderMicroService = loopback.findModel("OrderMicroService");
+exports.scheduleFlorists = function (date) {
   var UserMicroService = loopback.findModel("UserMicroService");
-  let resp = [];
-  return OrderMicroService.FloristAPI_getFlorist({ floristId: floristId, storeId: storeId }).then(result => {
-    if (!result.obj.length)
-      return UserMicroService.UserAPI_getUserInfo({ userId: floristId }).then(result => {
-        resp = result.obj;
-        return Promise.resolve(resp);
-      })
-    else
-      return Promise.map(result.obj, store => {
-        return Promise.map(store.includeFlorists, floristId => {
-          return UserMicroService.UserAPI_getUserInfo({ userId: floristId });
-        }).then(result => {
-          if (result.length != 0)
-            store.includeFlorists = result.map(r => r.obj[0]);
-          resp.push(store);
-          return Promise.resolve();
-        })
-      }).then(() => resp);
-  });
+  var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+  let schedule, stores;
+  return StatisticsMicroService.StatisticsAPI_getBatchOverViewLog().then(result => {
+    schedule = result.obj.schedule;
+    return UserMicroService.StoreAPI_getAllStores();
+  }).then(result => {
+    stores = result.obj;
+    let weekday = moment(date).local().weekday().toString();
+    return Promise.map(stores, store => {
+      store.florists = schedule[store._id][weekday];
+      return UserMicroService.StoreAPI_updateStore({ storeId: store._id, updateData: store });
+    })
+  })
 }

@@ -401,8 +401,18 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.getFlorists = function (cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
+    let florists;
     UserMicroService.FloristAPI_getFloristList().then(result => {
-      return Promise.map(result.obj, florist => {
+      florists = result.obj;
+      return UserMicroService.StoreAPI_getAllStores();
+    }).then(result => {
+      let stores = result.obj;
+      stores.forEach(s => {
+        for (let i = 0; i < florists.length; i++)
+          if (florists[i].userId == s.managerId)
+            florists[i].storeManager = s.name;
+      });
+      return Promise.map(florists, florist => {
         return UserMicroService.UserAPI_getUserInfo({ userId: florist.userId }).then(result => {
           result.obj.florist = florist;
           return result.obj;
