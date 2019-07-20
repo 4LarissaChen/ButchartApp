@@ -16,7 +16,7 @@ module.exports = function (ManagerFacadeAPI) {
   ManagerFacadeAPI.remoteMethod('batchCreateFlorist', {
     description: "批量创建花艺师账号.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "Admin user id", http: { source: 'path' } },
-    { arg: 'floristIds', type: 'string', required: true, description: "Florist Ids", http: { source: 'body' } }],
+    { arg: 'floristIds', type: ['string'], required: true, description: "Florist Ids", http: { source: 'body' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: 'is success or not', root: true },
     http: { path: '/manager/user/:userId/tel/batchCreateFlorist', verb: 'post', status: 200, errorStatus: [500] }
   });
@@ -24,12 +24,12 @@ module.exports = function (ManagerFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     Promise.map(floristIds, floristId => {
       return UserMicroService.UserAPI_getUserInfo({ userId: floristId }).then(result => result.obj).then(result => {
-        if (result.obj._id == null || result.obj._id != floristId)
+        if (result._id == null || result._id != floristId)
           throw apiUtils.build404Error(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, 'ButchartUser');
         return UserMicroService.FloristAPI_createFlorist({ floristId: floristId });
       });
     }).then(result => {
-      cb(null, result.obj);
+      cb(null, {isSuccess: true});
     }).catch(err => {
       cb(err, null);
     })
