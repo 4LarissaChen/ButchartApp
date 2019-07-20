@@ -1,0 +1,39 @@
+{
+  "name": "OverViewStatisticsEntry",
+  "base": "Model",
+  "idInjection": false,
+  "strict": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": false,
+    "_id": {
+      "type": "string"
+    },
+    "customerCount": {
+      "type": "number",
+      "required": false
+    },
+    "transactionCount": {
+      "type": "number",
+      "required": false
+    },
+    "afterSalesTransactionCount": {
+      "type": "number",
+      "required": false
+    },
+    "date": {
+      "type": "string",
+      "required": true
+    },
+    "priceRange": {
+      "type": "PriceRange",
+      "required": false
+    },
+    "type": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

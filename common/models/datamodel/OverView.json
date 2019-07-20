@@ -1,5 +1,5 @@
 {
-  "name": "OverViewLog",
+  "name": "OverView",
   "base": "Model",
   "idInjection": true,
   "strict": true,

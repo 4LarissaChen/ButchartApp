@@ -176,11 +176,15 @@
     "dataSource": "db",
     "public": true
   },
-  "OverViewLog": {
+  "OverView": {
     "dataSource": "db",
     "public": true
   },
   "PriceRange": {
+    "dataSource": "db",
+    "public": true
+  },
+  "OverViewStatisticsEntry": {
     "dataSource": "db",
     "public": true
   }

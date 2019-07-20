@@ -14,7 +14,7 @@ var startBatchAssignJob = function () {
   var later = require('later');
   var sched = later.parse.text('every 30 min');
   var t = later.setInterval(() => {
-    console.log("Batch assign transaction jop starting at" + moment().local().format('YYYY-MM-DD HH:mm:ss') + "...");
+    console.log("Batch assign transaction jop starting at " + moment().local().format('YYYY-MM-DD HH:mm:ss') + "...");
     return ManagerFacadeAPI.assignTransactionsBatchJob();
   }, sched);
 }

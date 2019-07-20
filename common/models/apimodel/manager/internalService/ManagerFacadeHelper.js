@@ -19,5 +19,7 @@ exports.scheduleFlorists = function (date) {
       store.florists = schedule[store._id][weekday];
       return UserMicroService.StoreAPI_updateStore({ storeId: store._id, updateData: store });
     })
+  }).catch(err => {
+    throw err;
   })
 }

@@ -12,11 +12,7 @@
       "id": true,
       "required": false
     },
-    "province": {
-      "type": "object",
-      "required": false
-    },
-    "hangzhou": {
+    "location": {
       "type": "object",
       "required": false
     },

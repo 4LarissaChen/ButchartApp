@@ -23,9 +23,11 @@ module.exports = function (ManagerFacadeAPI) {
   ManagerFacadeAPI.batchCreateFlorist = function (userId, floristIds, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     Promise.map(floristIds, floristId => {
-      return UserMicroService.UserAPI_getUserInfo({ userId: floristId }).then(result => result.obj[0]);
-    }).then(result => {
-
+      return UserMicroService.UserAPI_getUserInfo({ userId: floristId }).then(result => result.obj).then(result => {
+        if (result.obj._id == null || result.obj._id != floristId)
+          throw apiUtils.build404Error(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, 'ButchartUser');
+        return UserMicroService.FloristAPI_createFlorist({ floristId: floristId });
+      });
     }).then(result => {
       cb(null, result.obj);
     }).catch(err => {
@@ -136,12 +138,13 @@ module.exports = function (ManagerFacadeAPI) {
     http: { path: '/manager/statisticsBatchJob', verb: 'get', status: 200, errorStatus: [500] }
   });
   ManagerFacadeAPI.statisticsBatchJob = function (cb) {
+    console.log("订单信息统计任务开始...")
     var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
     var UserMicroService = loopback.findModel("UserMicroService");
-    let time = moment().local().format('YYYY-MM-DD HH:mm:ss');
+    let time = "2019-07-20 00:30:00"//moment().local().format('YYYY-MM-DD HH:mm:ss');
     let weekly = moment(time).day() == 1 ? true : false;
     let monthly = moment(time).date() == 1 ? true : false;
-    let seasonal = moment(time).subtract(1, 'd').quarter() < moment(time).add(1, 'd').quarter() ? true : false;
+    let seasonal = moment(time).subtract(1, 'd').quarter() < moment(time).quarter() ? true : false;
     let annual = moment(time).dayOfYear() == 1 ? true : false;
     let condition = {}, transactions = {}, florists, stores;
     let data = {};
@@ -182,6 +185,7 @@ module.exports = function (ManagerFacadeAPI) {
       };
       return StatisticsMicroService.StatisticsAPI_statisticsTransactionsBatchJob({ data: data });
     }).then(() => {
+      console.log("订单信息统计任务结束...")
       return { isSuccess: true };
     }).catch(err => {
       return Promise.reject(err);
@@ -199,7 +203,7 @@ module.exports = function (ManagerFacadeAPI) {
     StatisticsMicroService.StatisticsAPI_getBatchOverViewLog().then(result => {
       let overviewLog = result.obj;
       overviewLog.schedule = apiUtils.parseToObject(data);
-      StatisticsMicroService.StatisticsAPI_updateOverViewLog({data: overviewLog});
+      StatisticsMicroService.StatisticsAPI_updateOverViewLog({ data: overviewLog });
     }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
@@ -335,7 +339,7 @@ module.exports = function (ManagerFacadeAPI) {
       return Promise.all(promiseArray);
     }).then(result => {
       if (!overviewLog._id)
-        overviewLog._id = apiUtils.generateShortId("OverViewLog");
+        overviewLog._id = apiUtils.generateShortId("OverView");
       if (unassignTrans.length > 0)
         return StatisticsMicroService.StatisticsAPI_updateOverViewLog({ data: overviewLog });
       return;
@@ -384,7 +388,7 @@ module.exports = function (ManagerFacadeAPI) {
 
   ManagerFacadeAPI.remoteMethod('getBatchOverViewLog', {
     description: "获取统计总计信息",
-    returns: { arg: 'resp', type: 'OverViewLog', description: '', root: true },
+    returns: { arg: 'resp', type: 'OverView', description: '', root: true },
     http: { path: '/manager/getBatchOverViewLog', verb: 'get', status: 200, errorStatus: [500] }
   });
   ManagerFacadeAPI.getBatchOverViewLog = function (cb) {
@@ -491,6 +495,22 @@ module.exports = function (ManagerFacadeAPI) {
       });
     }).then(() => {
       cb(null, resp);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('getOverViewStatisticsLogs', {
+    description: "获取总览信息.",
+    accepts: [{ arg: 'filter', type: 'FilterRequest', required: true, description: "Query option.", http: { source: 'body' } }],
+    returns: { arg: 'resp', type: ['OverViewStatisticsEntry'], description: '', root: true },
+    http: { path: '/manager/getOverViewStatisticsLogs', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.getOverViewStatisticsLogs = function (filter, cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    filter = apiUtils.parseToObject(filter);
+    StatisticsMicroService.StatisticsAPI_getOverViewStatisticsLog({ filter: filter }).then(result => {
+      cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
     });
