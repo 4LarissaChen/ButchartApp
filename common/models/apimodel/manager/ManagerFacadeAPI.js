@@ -141,7 +141,7 @@ module.exports = function (ManagerFacadeAPI) {
     console.log("订单信息统计任务开始...")
     var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
     var UserMicroService = loopback.findModel("UserMicroService");
-    let time = "2019-07-20 00:30:00"//moment().local().format('YYYY-MM-DD HH:mm:ss');
+    let time = moment().local().format('YYYY-MM-DD HH:mm:ss');
     let weekly = moment(time).day() == 1 ? true : false;
     let monthly = moment(time).date() == 1 ? true : false;
     let seasonal = moment(time).subtract(1, 'd').quarter() < moment(time).quarter() ? true : false;
@@ -203,6 +203,7 @@ module.exports = function (ManagerFacadeAPI) {
     StatisticsMicroService.StatisticsAPI_getBatchOverViewLog().then(result => {
       let overviewLog = result.obj;
       overviewLog.schedule = apiUtils.parseToObject(data);
+      overviewLog.scheduleDate = moment().local().format('YYYY-MM-DD HH:mm:ss');
       StatisticsMicroService.StatisticsAPI_updateOverViewLog({ data: overviewLog });
     }).then(() => {
       cb(null, { isSuccess: true });

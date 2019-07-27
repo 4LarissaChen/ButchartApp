@@ -8,6 +8,7 @@ var errorConstant = require('../../../../server/constants/errorConstants.js');
 var messageUtils = require('../../../../server/utils/messageUtils.js');
 var apiUtils = require('../../../../server/utils/apiUtils.js');
 var WechatPayService = require('./internalService/WechatPayService.js');
+var WorkspaceFacadeService = require("./internalService/WorkspaceFacadeService.js");
 
 module.exports = function (WorkspaceFacadeAPI) {
   apiUtils.disableRelatedModelRemoteMethod(WorkspaceFacadeAPI);
@@ -111,8 +112,18 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.getUserOwnedTransactions = function (userId, page, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.TransactionAPI_getUserOwnedTransactions({ userId: userId, page: page }).then(result => {
-      cb(null, result.obj);
+    let workspaceFacadeService = new WorkspaceFacadeService();
+    let florists;
+    workspaceFacadeService.getFlorists().then(result => {
+      florists = result;
+      return UserMicroService.TransactionAPI_getUserOwnedTransactions({ userId: userId, page: page });
+    }).then(result => {
+      let transactions = result.obj;
+      transactions.forEach(transaction => {
+        if (transaction.floristId)
+          transaction.floristName = florists.find(florist => florist.userId == transaction.floristId).fullname;
+      });
+      cb(null, transactions);
     }).catch(err => {
       cb(err, null);
     })
@@ -128,8 +139,18 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.searchTransaction = function (userId, searchData, page, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.TransactionAPI_searchTransaction({ filter: searchData, page: page }).then(result => {
-      cb(null, result.obj);
+    var workspaceFacadeService = new WorkspaceFacadeService();
+    let florists = [];
+    workspaceFacadeService.getFlorists().then(result => {
+      florists = result;
+      return UserMicroService.TransactionAPI_searchTransaction({ filter: searchData, page: page });
+    }).then(result => {
+      let transactions = result.obj;
+      transactions.forEach(transaction => {
+        if (transaction.floristId)
+          transaction.floristName = florists.find(florist => florist.userId == transaction.floristId).fullname;
+      });
+      cb(null, transactions);
     }).catch(err => {
       cb(err, null);
     })
@@ -145,8 +166,18 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.searchTransactionWithAddress = function (userId, searchData, page, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    UserMicroService.TransactionAPI_searchTransactionWithAddress({ filter: searchData, page: page }).then(result => {
-      cb(null, result.obj);
+    let workspaceFacadeService = new WorkspaceFacadeService();
+    let florists;
+    workspaceFacadeService.getFlorists().then(result => {
+      florists = result;
+      return UserMicroService.TransactionAPI_searchTransactionWithAddress({ filter: searchData, page: page });
+    }).then(result => {
+      let transactions = result.obj;
+      transactions.forEach(transaction => {
+        if (transaction.floristId)
+          transaction.floristName = florists.find(florist => florist.userId == transaction.floristId).fullname;
+      });
+      cb(null, transactions);
     }).catch(err => {
       cb(err, null);
     })
@@ -400,31 +431,12 @@ module.exports = function (WorkspaceFacadeAPI) {
     http: { path: '/workspace/getFlorists', verb: 'get', status: 200, errorStatus: [500] }
   });
   WorkspaceFacadeAPI.getFlorists = function (cb) {
-    var UserMicroService = loopback.findModel("UserMicroService");
-    let florists;
-    UserMicroService.FloristAPI_getFloristList().then(result => {
-      florists = result.obj;
-      return UserMicroService.StoreAPI_getAllStores();
-    }).then(result => {
-      let stores = result.obj;
-      stores.forEach(s => {
-        for (let i = 0; i < florists.length; i++)
-          if (florists[i].userId == s.managerId)
-            florists[i].storeManager = s.name;
-      });
-      return Promise.map(florists, florist => {
-        return UserMicroService.UserAPI_getUserInfo({ userId: florist.userId }).then(result => {
-          result.obj.florist = florist;
-          return result.obj;
-        });
-      }).then(result => {
-        cb(null, result);
-      })
-    }).catch(err => {
-      cb(err, null);
-    });
+    let workspaceFacadeService = new WorkspaceFacadeService();
+    workspaceFacadeService.getFlorists().then(result => {
+      cb(null, result);
+    })
   }
-
+  
   WorkspaceFacadeAPI.remoteMethod('getUserInfo', {
     description: "获取用户信息.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "用户Id", http: { source: 'path' } }],
