@@ -40,7 +40,9 @@
     "wechatPay": {
       "appid": "wx66142d5363835ef3",
       "mch_id": "1315332101",
-      "key": "26FC68EC2E5AF61772E86DCA2824AB7A"
+      "key": "26FC68EC2E5AF61772E86DCA2824AB7A",
+      "trade_type": "JSAPI",
+      "app_Secret": "f6bdd80199146d83005b170dd08413cb"
     }
   }
 }

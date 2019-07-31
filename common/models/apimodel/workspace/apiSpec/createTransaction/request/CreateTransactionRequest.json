@@ -33,6 +33,9 @@
     },
     "comment": {
 			"type": "string"
+    },
+    "code": {
+			"type": "string"
 		}
   },
   "relations":{

@@ -6,7 +6,7 @@ var crypto = require('crypto');
 var rp = require('request-promise');
 
 class WechatPayService {
-  generatePaySignment(attach, body, nonce_str, notify_url, out_trade_no, spbill_create_ip, total_fee, trade_type) {
+  generatePaySignment(attach, body, nonce_str, notify_url, out_trade_no, spbill_create_ip, total_fee, trade_type, openid) {
     var data = {
       appid: settings.appid,
       attach: attach,
@@ -14,6 +14,7 @@ class WechatPayService {
       mch_id: settings.mch_id,
       nonce_str: nonce_str,
       notify_url: notify_url,
+      openid: openid,
       out_trade_no: out_trade_no,
       spbill_create_ip: spbill_create_ip,
       total_fee: total_fee,
@@ -46,8 +47,48 @@ class WechatPayService {
     return Math.random().toString(36).substr(2, 15);
   };
 
+  getOpenid(code) {
+    let url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + settings.appid + "&secret=" + settings.app_Secret + "&code=" + code + "&grant_type=authorization_code";
+    let option = {
+      method: 'GET',
+      url: url
+    };
+    return rp(option).then(result => {
+      result = JSON.parse(result);
+      if (result.openid)
+        return result.openid;
+      else
+        throw Error(result.errmsg);
+    }).catch(err => {
+      console.log(err);
+      throw Error(err);
+    })
+  }
+
+  getAccessToken() {
+    let url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + settings.appid + "&redirect_uri=https%3a%2f%2fwww.thebutchart.cn&response_type=code&scope=snsapi_base&state=123&connect_redirect=1#wechat_redirect";
+    let option = {
+      method: 'POST',
+      url: url
+    };
+    return rp(option).then(result => {
+      if (result.statusCode == 200) {
+        console.log(result);
+        if (40029 == result.errcode) {
+          return body;
+        } else {
+          body = JSON.parse(body);
+          return body;
+        }
+      };
+    }).catch(err => {
+      console.log(err);
+      throw Error(err);
+    });
+  }
+
   //微信支付函数
-  wechatH5Pay(transactionId, totalPrice, ip) {
+  wechatH5Pay(transactionId, totalPrice, ip, openid) {
     var self = this;
     var url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
     var appid = settings.appid;//应用微信中的id
@@ -65,11 +106,12 @@ class WechatPayService {
     formData += "<mch_id>" + mch_id + "</mch_id>"; //商户号
     formData += "<nonce_str>" + nonce_str + "</nonce_str>"; //随机字符串，不长于32位
     formData += "<notify_url>" + notify_url + "</notify_url>"; //支付成功后微信服务器通过POST请求通知这个地址
+    formData += "<openid>" + openid + "</openid>"; //openid
     formData += "<out_trade_no>" + out_trade_no + "</out_trade_no>"; //订单号
     formData += "<spbill_create_ip>" + ip + "</spbill_create_ip>"; //服务端ip
     formData += "<total_fee>" + total_fee + "</total_fee>"; //金额
-    formData += "<trade_type>MWEB</trade_type>"; //类型APP
-    formData += "<sign>" + self.generatePaySignment(attach, body, nonce_str, notify_url, out_trade_no, ip, total_fee, 'MWEB') + "</sign>";
+    formData += "<trade_type>" + settings.trade_type + "</trade_type>"; //类型APP
+    formData += "<sign>" + self.generatePaySignment(attach, body, nonce_str, notify_url, out_trade_no, ip, total_fee, settings.trade_type, openid) + "</sign>";
     formData += "</xml>";
     let option = {
       method: 'POST',
