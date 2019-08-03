@@ -20,6 +20,10 @@ class WechatPayService {
       total_fee: total_fee,
       trade_type: trade_type
     };
+    return this.sign(data);
+  }
+
+  sign(data) {
     var string = this.raw(data);
     string = string + '&key=' + settings.key; //key为在微信商户平台(pay.weixin.qq.com)-->账户设置-->API安全-->密钥设置
     var sign = crypto.createHash('md5').update(string, 'utf8').digest('hex');
@@ -126,7 +130,15 @@ class WechatPayService {
         resp = data;
         return;
       });
-      return resp;
+      let data = {
+        "appId": settings.appid,     //公众号名称，由商户传入
+        "timeStamp": parseInt(new Date().getTime() / 1000).toString(),         //时间戳，自1970年以来的秒数
+        "nonceStr": self.createNonceStr(), //随机串 // 通过统一下单接口获取
+        "package": "prepay_id=" + resp.prepay_id,
+        "signType": "MD5",         //微信签名方式：
+      }
+      data.sign = self.sign(data);
+      return data;
     }).catch(err => {
       throw err;
     })
