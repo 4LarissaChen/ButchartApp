@@ -137,7 +137,7 @@ class WechatPayService {
         "package": "prepay_id=" + resp.prepay_id,
         "signType": "MD5",         //微信签名方式：
       }
-      data.sign = self.sign(data);
+      data.paySign = self.sign(data);
       return data;
     }).catch(err => {
       throw err;
