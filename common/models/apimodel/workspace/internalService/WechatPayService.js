@@ -93,6 +93,7 @@ class WechatPayService {
       if (result == null)
         throw Error("获取jsapi_ticket返回错误");
       if (result.errcode == 0 && result.errmsg == "ok") {
+        result = JSON.parse(result);
         let data = {
           url: "https://www.thebutchart.cn/confirmorder?value=1",
           timestamp: timestamp,
@@ -102,8 +103,8 @@ class WechatPayService {
         let str = "jsapi_ticket=" + data.jsapi_ticket + "&noncestr=" + data.noncestr + "&timestamp=" + data.timestamp + "&url=" + data.url;
         return crypto.createHash('sha1').update(str, 'utf8').digest('hex');
       }
-      throw Error("获取jsapi_ticket返回错误");
-    })
+      throw Error(result);
+    });
   }
 
   //微信支付函数
@@ -154,7 +155,9 @@ class WechatPayService {
         "signType": "MD5",         //微信签名方式：
       }
       data.paySign = self.sign(data);
-      data.signature = self.getSignature(data.timeStamp, data.nonceStr)
+      return self.getSignature(data.timeStamp, data.nonceStr)
+    }).then(result => {
+      data.signature = result;
       return data;
     }).catch(err => {
       throw err;

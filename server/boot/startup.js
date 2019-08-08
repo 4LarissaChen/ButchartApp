@@ -70,4 +70,9 @@ module.exports = function (app) {
   startStatisticsBatchJob();
   starlocationBatchJob();
   getWXAccessTokenBatchJob();
+  let wechatPayService = new WechatPayService();
+  return wechatPayService.getAccessToken().then(result => {
+    global.settings.wxConfig = { access_token: result.access_token };
+    return;
+  })
 }
