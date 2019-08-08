@@ -91,9 +91,33 @@ class WechatPayService {
     });
   }
 
+  getSignature(timestamp, noncestr) {
+    let url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + global.settings.wxConfig.access_token + "&type=jsapi";
+    let option = {
+      method: 'GET',
+      url: url
+    };
+    return rp(option).then(result => {
+      if (result == null)
+        throw Error("获取jsapi_ticket返回错误");
+      if (result.errcode == 0 && result.errmsg == "ok") {
+        let data = {
+          url: "https://www.thebutchart.cn/confirmorder?value=1",
+          timestamp: timestamp,
+          noncestr: noncestr,
+          jsapi_ticket: result.ticket
+        }
+        let str = "jsapi_ticket=" + data.jsapi_ticket + "&noncestr=" + data.noncestr + "&timestamp=" + data.timestamp + "&url=" + data.url;
+        return crypto.createHash('sha1').update(str, 'utf8').digest('hex');
+      }
+      throw Error("获取jsapi_ticket返回错误");
+    })
+  }
+
   //微信支付函数
   wechatH5Pay(transactionId, totalPrice, ip, openid) {
     var self = this;
+    let data;
     var url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
     var appid = settings.appid;//应用微信中的id
     var mch_id = settings.mch_id;//商户号
@@ -130,7 +154,7 @@ class WechatPayService {
         resp = data;
         return;
       });
-      let data = {
+      data = {
         "appId": settings.appid,     //公众号名称，由商户传入
         "timeStamp": parseInt(new Date().getTime() / 1000).toString(),         //时间戳，自1970年以来的秒数
         "nonceStr": self.createNonceStr(), //随机串 // 通过统一下单接口获取
@@ -138,6 +162,7 @@ class WechatPayService {
         "signType": "MD5",         //微信签名方式：
       }
       data.paySign = self.sign(data);
+      data.signature = self.getSignature(data.timeStamp, data.nonceStr)
       return data;
     }).catch(err => {
       throw err;

@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "wechatpay",
-      "program": "${workspaceFolder}/common/models/apimodel/workspace/internalService/WechatPayService.js"
+      "program": "${workspaceFolder}/common/models/apimodel/workspace/internalService/index.js"
     },
     
     

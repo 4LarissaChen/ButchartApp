@@ -8,6 +8,7 @@ var settings = require('../config.json');
 var loopback = require('loopback');
 var Promise = require('bluebird');
 var apiUtils = require('../utils/apiUtils.js');
+var WechatPayService = require('../../common/models/apimodel/workspace/internalService/WechatPayService.js');
 
 var startBatchAssignJob = function () {
   let ManagerFacadeAPI = loopback.findModel("ManagerFacadeAPI");
@@ -47,8 +48,23 @@ var starlocationBatchJob = function () {
   }, sched);
 }
 
+var getWXAccessTokenBatchJob = function () {
+  let later = require('later');
+  let wechatPayService = new WechatPayService();
+  let sched = later.parse.text('every 7199 seconds');//at 4:30 am every 1 day of the month  //at 1:36 pm
+  later.date.localTime();
+  let t = later.setInterval(() => {
+    console.log("Get wechat access_token at " + moment().local().format('YYYY-MM-DD HH:mm:ss') + ".");
+    return wechatPayService.getAccessToken().then(result => {
+      if (result.access_token)
+        global.settings.wxConfig = { access_token: result.access_token };
+    })
+  }, sched);
+}
+
 module.exports = function (app) {
   startBatchAssignJob();
   startStatisticsBatchJob();
   starlocationBatchJob();
+  getWXAccessTokenBatchJob();
 }
