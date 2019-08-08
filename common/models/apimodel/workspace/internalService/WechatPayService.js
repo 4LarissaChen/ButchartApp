@@ -70,7 +70,7 @@ class WechatPayService {
   }
 
   getAccessToken() {
-    let url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + settings.appid + "&redirect_uri=https%3a%2f%2fwww.thebutchart.cn&response_type=code&scope=snsapi_base&state=123&connect_redirect=1#wechat_redirect";
+    let url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + settings.appid + "&secret=" + settings.app_Secret;
     let option = {
       method: 'GET',
       url: url
