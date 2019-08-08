@@ -56,6 +56,7 @@ var getWXAccessTokenBatchJob = function () {
   let t = later.setInterval(() => {
     console.log("Get wechat access_token at " + moment().local().format('YYYY-MM-DD HH:mm:ss') + ".");
     return wechatPayService.getAccessToken().then(result => {
+      console.log(result);
       if (result.access_token)
         global.settings.wxConfig = { access_token: result.access_token };
     })

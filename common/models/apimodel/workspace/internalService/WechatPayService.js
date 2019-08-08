@@ -76,16 +76,7 @@ class WechatPayService {
       url: url
     };
     return rp(option).then(result => {
-      if (result.statusCode == 200) {
-        console.log(result);
-        if (40029 == result.errcode) {
-          return body;
-        } else {
-          body = JSON.parse(body);
-          return body;
-        }
-      };
-      console.log(result);
+      return JSON.parse(result);
     }).catch(err => {
       console.log(err);
       throw Error(err);
