@@ -72,7 +72,7 @@ class WechatPayService {
   getAccessToken() {
     let url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + settings.appid + "&redirect_uri=https%3a%2f%2fwww.thebutchart.cn&response_type=code&scope=snsapi_base&state=123&connect_redirect=1#wechat_redirect";
     let option = {
-      method: 'POST',
+      method: 'GET',
       url: url
     };
     return rp(option).then(result => {
@@ -85,6 +85,7 @@ class WechatPayService {
           return body;
         }
       };
+      console.log(result);
     }).catch(err => {
       console.log(err);
       throw Error(err);
