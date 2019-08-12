@@ -94,8 +94,8 @@ class WechatPayService {
     return rp(option).then(result => {
       if (result == null)
         throw Error("获取jsapi_ticket返回错误");
+      result = JSON.parse(result);
       if (result.errcode == 0 && result.errmsg == "ok") {
-        result = JSON.parse(result);
         let data = {
           url: "https://www.thebutchart.cn/confirmorder?value=1",
           timestamp: timestamp,

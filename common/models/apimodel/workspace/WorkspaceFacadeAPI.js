@@ -123,7 +123,7 @@ module.exports = function (WorkspaceFacadeAPI) {
       let transactions = result.obj;
       transactions.forEach(transaction => {
         if (transaction.floristId)
-          transaction.floristName = florists.find(florist => florist.userId == transaction.floristId).fullname;
+          transaction.floristName = florists.find(florist => florist.florist.userId == transaction.floristId).fullname;
       });
       cb(null, transactions);
     }).catch(err => {
@@ -149,8 +149,10 @@ module.exports = function (WorkspaceFacadeAPI) {
     }).then(result => {
       let transactions = result.obj;
       transactions.forEach(transaction => {
-        if (transaction.floristId)
-          transaction.floristName = florists.find(florist => florist.userId == transaction.floristId).fullname;
+        if (transaction.floristId) {
+          let f = florists.find(florist => florist.florist.userId == transaction.floristId);
+          transaction.floristName = f.fullname? f.fullname : f._id;
+        }
       });
       cb(null, transactions);
     }).catch(err => {
@@ -177,8 +179,8 @@ module.exports = function (WorkspaceFacadeAPI) {
       let transactions = result.obj;
       transactions.forEach(transaction => {
         if (transaction.floristId) {
-          let f = florists.find(florist => florist.userId == transaction.floristId);;
-          transaction.floristName = f.fullname ? f.fullname : f.userId;
+          let f = florists.find(florist => florist.florist.userId == transaction.floristId);;
+          transaction.floristName = f.fullname? f.fullname : f._id;
         }
       });
       cb(null, transactions);
