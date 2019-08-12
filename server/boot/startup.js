@@ -51,7 +51,7 @@ var starlocationBatchJob = function () {
 var getWXAccessTokenBatchJob = function () {
   let later = require('later');
   let wechatPayService = new WechatPayService();
-  let sched = later.parse.text('every 119 mins');//at 4:30 am every 1 day of the month  //at 1:36 pm
+  let sched = later.parse.text('every 2 mins');//at 4:30 am every 1 day of the month  //at 1:36 pm
   later.date.localTime();
   let t = later.setInterval(() => {
     console.log("Get wechat access_token at " + moment().local().format('YYYY-MM-DD HH:mm:ss') + ".");
