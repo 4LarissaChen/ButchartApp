@@ -56,10 +56,10 @@ var getWXAccessTokenBatchJob = function () {
   let t = later.setInterval(() => {
     console.log("Get wechat access_token at " + moment().local().format('YYYY-MM-DD HH:mm:ss') + ".");
     return wechatPayService.getAccessToken().then(result => {
-      console.log(result);
+      console.log(moment().local().format('YYYY-MM-DD HH:mm:ss') + ": " + result.access_token);
       if (result.access_token) {
         global.settings.wxConfig = { access_token: result.access_token };
-        console.log(global.settings.wxConfig.access_token);
+        console.log(moment().local().format('YYYY-MM-DD HH:mm:ss') + ": " + global.settings.wxConfig.access_token);
       }
     })
   }, sched);
@@ -72,6 +72,7 @@ module.exports = function (app) {
   getWXAccessTokenBatchJob();
   let wechatPayService = new WechatPayService();
   return wechatPayService.getAccessToken().then(result => {
+    console.log(moment().local().format('YYYY-MM-DD HH:mm:ss') + ": " + result.access_token);
     global.settings.wxConfig = { access_token: result.access_token };
     return;
   })

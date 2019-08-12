@@ -176,8 +176,10 @@ module.exports = function (WorkspaceFacadeAPI) {
     }).then(result => {
       let transactions = result.obj;
       transactions.forEach(transaction => {
-        if (transaction.floristId)
-          transaction.floristName = florists.find(florist => florist.userId == transaction.floristId).fullname;
+        if (transaction.floristId) {
+          let f = florists.find(florist => florist.userId == transaction.floristId);;
+          transaction.floristName = f.fullname ? f.fullname : f.userId;
+        }
       });
       cb(null, transactions);
     }).catch(err => {
@@ -438,7 +440,7 @@ module.exports = function (WorkspaceFacadeAPI) {
       cb(null, result);
     })
   }
-  
+
   WorkspaceFacadeAPI.remoteMethod('getUserInfo', {
     description: "获取用户信息.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "用户Id", http: { source: 'path' } }],

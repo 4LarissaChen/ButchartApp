@@ -4,6 +4,7 @@ var fs = require('fs');
 var settings = JSON.parse(fs.readFileSync(global.appRoot + 'server/config.json')).features.wechatPay;
 var crypto = require('crypto');
 var rp = require('request-promise');
+var moment = require('moment');
 
 class WechatPayService {
   generatePaySignment(attach, body, nonce_str, notify_url, out_trade_no, spbill_create_ip, total_fee, trade_type, openid) {
@@ -84,6 +85,7 @@ class WechatPayService {
   }
 
   getSignature(timestamp, noncestr) {
+    console.log("getSignature: " + global.settings.wxConfig.access_token + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
     let url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + global.settings.wxConfig.access_token + "&type=jsapi";
     let option = {
       method: 'GET',
