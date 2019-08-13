@@ -23,3 +23,22 @@ exports.scheduleFlorists = function (date) {
     throw err;
   })
 }
+
+exports.getFlorist = function (userId, storeId) {
+  var UserMicroService = loopback.findModel("UserMicroService");
+  var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+  let store, florists;
+  return UserMicroService.StoreAPI_getStoreByManager(userId).then(result => {
+    store = result.obj;
+    return UserMicroService.FloristAPI_getFloristList();
+  }).then(result => {
+    florists = result.obj;
+    let resp = [];
+    store.florists.forEach(floristId => {
+      let florist = florists.find(f => f.userId == floristId);
+      if (florist)
+        resp.push(florist);
+    });
+    return resp;
+  })
+}

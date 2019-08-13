@@ -7,7 +7,7 @@ var moment = require('moment');
 var Promise = require('bluebird');
 var errorConstant = require('../../../../server/constants/errorConstants.js');
 var ManagerFacadeHelper = require('./internalService/ManagerFacadeHelper.js');
-
+var WorkspaceFacadeService = require('../workspace/internalService/WorkspaceFacadeService.js');
 var apiUtils = require('../../../../server/utils/apiUtils.js');
 
 module.exports = function (ManagerFacadeAPI) {
@@ -29,7 +29,7 @@ module.exports = function (ManagerFacadeAPI) {
         return UserMicroService.FloristAPI_createFlorist({ floristId: floristId });
       });
     }).then(result => {
-      cb(null, {isSuccess: true});
+      cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
     })
@@ -99,14 +99,14 @@ module.exports = function (ManagerFacadeAPI) {
   }
 
   ManagerFacadeAPI.remoteMethod('getFlorist', {
-    description: "根据id获取花艺师信息.",
-    accepts: [{ arg: 'floristId', type: 'string', required: false, description: "Florist Id.", http: { source: 'query' } },
+    description: "根据storeId获取花艺师信息.",
+    accepts: [{ arg: 'userId', type: 'string', required: false, description: "User Id.", http: { source: 'query' } },
     { arg: 'storeId', type: 'string', required: false, description: "Store Id.", http: { source: 'query' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/getFlorist', verb: 'get', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.getFlorist = function (floristId, storeId, cb) {
-    ManagerFacadeHelper.getFlorist(floristId, storeId).then(resp => {
+  ManagerFacadeAPI.getFlorist = function (userId, storeId, cb) {
+    ManagerFacadeHelper.getFlorist(userId, storeId).then(resp => {
       cb(null, resp);
     }).catch(err => {
       cb(err, null);
@@ -202,11 +202,49 @@ module.exports = function (ManagerFacadeAPI) {
     var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
     StatisticsMicroService.StatisticsAPI_getBatchOverViewLog().then(result => {
       let overviewLog = result.obj;
-      overviewLog.schedule = apiUtils.parseToObject(data);
-      overviewLog.scheduleDate = moment().local().format('YYYY-MM-DD HH:mm:ss');
+      data = apiUtils.parseToObject(data);
+      overviewLog.schedule = data.schedule;
+      overviewLog.scheduleDate = data.scheduleDate;
       StatisticsMicroService.StatisticsAPI_updateOverViewLog({ data: overviewLog });
     }).then(() => {
       cb(null, { isSuccess: true });
+    }).catch(err => {
+      cb(err, null);
+    })
+  }
+
+  ManagerFacadeAPI.remoteMethod('getSchedule', {
+    description: "获取排班表.",
+    returns: { arg: 'resp', type: 'object', description: '', root: true },
+    http: { path: '/manager/getSchedule', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.getSchedule = function (cb) {
+    var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
+    var UserMicroService = loopback.findModel("UserMicroService");
+    var workspaceFacadeService = new WorkspaceFacadeService();
+    let scheduleDate;
+    Promise.props({
+      scheduleData: StatisticsMicroService.StatisticsAPI_getSchedule().then(result => result.obj),
+      stores: UserMicroService.StoreAPI_getAllStores().then(result => result.obj),
+      florists: workspaceFacadeService.getFlorists()
+    }).then(result => {
+      let schedule = result.scheduleData[0].schedule;
+      scheduleDate = result.scheduleData[0].scheduleDate;
+      let storeIds = Object.keys(schedule);
+      let resp = {};
+      storeIds.forEach(storeId => {
+        let store = result.stores.find(s => s._id == storeId);
+        if (store == null) return;
+        resp[store.name] = {};
+        let dayNo = Object.keys(schedule[storeId]);
+        dayNo.forEach(no => {
+          let floristIds = schedule[storeId][no];
+          resp[store.name][no] = floristIds.map(floristId => result.florists.find(f => f.florist.userId == floristId).fullname);
+        })
+      })
+      return resp;
+    }).then(result => {
+      cb(null, { schedule: result, scheduleDate: scheduleDate });
     }).catch(err => {
       cb(err, null);
     })

@@ -99,6 +99,18 @@
       "principalId": "FloristSelf",
       "permission": "ALLOW",
       "property": "getCustomerPool"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "StoreAdmin",
+      "permission": "ALLOW",
+      "property": "getSchedule"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Manager",
+      "permission": "ALLOW",
+      "property": "getSchedule"
     }
   ],
   "methods": {},
