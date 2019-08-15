@@ -30,7 +30,7 @@
     },
     {
       "principalType": "ROLE",
-      "principalId": "StoreManager",
+      "principalId": "Manager",
       "permission": "ALLOW",
       "property": "batchCreateFlorist"
     },
@@ -42,25 +42,25 @@
     },
     {
       "principalType": "ROLE",
-      "principalId": "StoreAdmin",
+      "principalId": "Manager",
       "permission": "ALLOW",
       "property": "bindFloristToStore"
     },
     {
       "principalType": "ROLE",
-      "principalId": "StoreAdmin",
+      "principalId": "Manager",
       "permission": "ALLOW",
       "property": "unbindFloristToStore"
     },
     {
       "principalType": "ROLE",
-      "principalId": "StoreAdmin",
+      "principalId": "Manager",
       "permission": "ALLOW",
       "property": "assignJobToFlroist"
     },
     {
       "principalType": "ROLE",
-      "principalId": "StoreAdmin",
+      "principalId": "Manager",
       "permission": "ALLOW",
       "property": "getFlorist"
     },
@@ -90,7 +90,7 @@
     },
     {
       "principalType": "ROLE",
-      "principalId": "StoreAdmin",
+      "principalId": "Manager",
       "permission": "ALLOW",
       "property": "getStoreStatisticsLog"
     },
