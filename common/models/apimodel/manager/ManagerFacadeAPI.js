@@ -252,23 +252,16 @@ module.exports = function (ManagerFacadeAPI) {
 
   ManagerFacadeAPI.remoteMethod('setStoreManager', {
     description: "设置user为店长.",
-    accepts: [{ arg: 'userId', type: 'string', required: false, description: "Manager Id", http: { source: 'path' } },
-    { arg: 'storeId', type: 'string', required: false, description: "store Id", http: { source: 'path' } }],
+    accepts: [{ arg: 'userId', type: 'string', required: false, description: "Manager Id", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
-    http: { path: '/manager/user/:userId/store/:storeId/setStoreManager', verb: 'put', status: 200, errorStatus: [500] }
+    http: { path: '/manager/user/:userId/setStoreManager', verb: 'put', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.setStoreManager = function (userId, storeId, cb) {
+  ManagerFacadeAPI.setStoreManager = function (userId, cb) {
     let UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.UserAPI_getUserInfo({ userId: userId }).then(result => {
       if (!result.obj)
         throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "ButchartUser"));
-      return UserMicroService.StoreAPI_getStoreById({ storeId: storeId });
-    }).then(result => {
-      if (!result.obj)
-        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Store"));
-      let store = result.obj;
-      store.managerId = userId;
-      return UserMicroService.StoreAPI_updateStore({ storeId: storeId, updateData: store });
+      return UserMicroService.AuthorizationAPI_assignRoleToButchartUser({ userId: userId, roleName: "Manager" });
     }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
@@ -278,23 +271,16 @@ module.exports = function (ManagerFacadeAPI) {
 
   ManagerFacadeAPI.remoteMethod('unsetStoreManager', {
     description: "解除店长权限.",
-    accepts: [{ arg: 'userId', type: 'string', required: false, description: "Manager Id", http: { source: 'path' } },
-    { arg: 'storeId', type: 'string', required: false, description: "store Id", http: { source: 'path' } }],
+    accepts: [{ arg: 'userId', type: 'string', required: false, description: "Manager Id", http: { source: 'path' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
-    http: { path: '/manager/user/:userId/store/:storeId/unsetStoreManager', verb: 'put', status: 200, errorStatus: [500] }
+    http: { path: '/manager/user/:userId/unsetStoreManager', verb: 'put', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.unsetStoreManager = function (userId, storeId, cb) {
+  ManagerFacadeAPI.unsetStoreManager = function (userId, cb) {
     let UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.UserAPI_getUserInfo({ userId: userId }).then(result => {
       if (!result.obj)
         throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "ButchartUser"));
-      return UserMicroService.StoreAPI_getStoreById({ storeId: storeId });
-    }).then(result => {
-      if (!result.obj)
-        throw apiUtils.build404Error(nodeUtil.format(errorConstant.ERROR_MESSAGE_ENTITY_NOT_FOUND, "Store"));
-      let store = result.obj;
-      delete store.managerId;
-      return UserMicroService.StoreAPI_updateStore({ storeId: storeId, updateData: store });
+      return UserMicroService.AuthorizationAPI_unAssignRoleToButchartUser({ userId: userId, roleName: "Manager" });
     }).then(() => {
       cb(null, { isSuccess: true });
     }).catch(err => {
