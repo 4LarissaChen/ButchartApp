@@ -85,28 +85,15 @@ class WechatPayService {
   }
 
   getSignature(timestamp, noncestr) {
-    console.log("getSignature: " + global.settings.wxConfig.access_token + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
-    let url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + global.settings.wxConfig.access_token + "&type=jsapi";
-    let option = {
-      method: 'GET',
-      url: url
-    };
-    return rp(option).then(result => {
-      if (result == null)
-        throw Error("获取jsapi_ticket返回错误");
-      result = JSON.parse(result);
-      if (result.errcode == 0 && result.errmsg == "ok") {
-        let data = {
-          url: "https://www.thebutchart.cn/confirmorder?value=1",
-          timestamp: timestamp,
-          noncestr: noncestr,
-          jsapi_ticket: result.ticket
-        }
-        let str = "jsapi_ticket=" + data.jsapi_ticket + "&noncestr=" + data.noncestr + "&timestamp=" + data.timestamp + "&url=" + data.url;
-        return crypto.createHash('sha1').update(str, 'utf8').digest('hex');
-      }
-      throw Error(result);
-    });
+
+    let data = {
+      url: "https://www.thebutchart.cn/confirmorder?value=1",
+      timestamp: timestamp,
+      noncestr: noncestr,
+      jsapi_ticket: global.settings.wxConfig.jsapi_ticket
+    }
+    let str = "jsapi_ticket=" + data.jsapi_ticket + "&noncestr=" + data.noncestr + "&timestamp=" + data.timestamp + "&url=" + data.url;
+    return crypto.createHash('sha1').update(str, 'utf8').digest('hex');
   }
 
   //微信支付函数
@@ -159,6 +146,8 @@ class WechatPayService {
       data.paySign = self.sign(data);
       return self.getSignature(data.timeStamp, data.nonceStr)
     }).then(result => {
+      data.jsapi_ticket = global.settings.wxConfig.jsapi_ticket;
+      data.access_token = global.settings.wxConfig.jsapi_ticket;
       data.signature = result;
       return data;
     }).catch(err => {
