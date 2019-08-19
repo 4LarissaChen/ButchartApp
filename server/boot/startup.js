@@ -87,19 +87,19 @@ module.exports = function (app) {
   starlocationBatchJob();
   getWXAccessTokenBatchJob();
   let wechatPayService = new WechatPayService();
-  let access_token;
   return wechatPayService.getAccessToken().then(result => {
     console.log(moment().local().format('YYYY-MM-DD HH:mm:ss') + ": " + result.access_token);
-    access_token = result.access_token;
-    let url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + access_token + "&type=jsapi";
+    global.settings.wxConfig = { access_token: result.access_token };
+    console.log("getSignature: " + global.settings.wxConfig.access_token + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
+    let url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + global.settings.wxConfig.access_token + "&type=jsapi";
     let option = {
       method: 'GET',
       url: url
     };
     return rp(option).then(result => {
       result = JSON.parse(result);
-      global.setting.wxConfig = {accesstoken: access_token, jsapi_ticket: result.ticket};
-      console.log("getJsapi_ticket" + JSON.stringify(global.settings.wxConfig) + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
+      global.settings.wxConfig["jsapi_ticket"] = result.ticket;
+      console.log("getJsapi_ticket" + global.settings.wxConfig.jsapi_ticket + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
       return;
     });
   })
