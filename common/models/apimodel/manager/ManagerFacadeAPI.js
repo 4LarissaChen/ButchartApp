@@ -100,13 +100,12 @@ module.exports = function (ManagerFacadeAPI) {
 
   ManagerFacadeAPI.remoteMethod('getFlorist', {
     description: "根据storeId获取花艺师信息.",
-    accepts: [{ arg: 'userId', type: 'string', required: false, description: "User Id.", http: { source: 'query' } },
-    { arg: 'storeId', type: 'string', required: false, description: "Store Id.", http: { source: 'query' } }],
+    accepts: [{ arg: 'userId', type: 'string', required: false, description: "User Id.", http: { source: 'query' } }],
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/manager/getFlorist', verb: 'get', status: 200, errorStatus: [500] }
   });
-  ManagerFacadeAPI.getFlorist = function (userId, storeId, cb) {
-    ManagerFacadeHelper.getFlorist(userId, storeId).then(resp => {
+  ManagerFacadeAPI.getFlorist = function (userId, cb) {
+    ManagerFacadeHelper.getFlorist(userId).then(resp => {
       cb(null, resp);
     }).catch(err => {
       cb(err, null);

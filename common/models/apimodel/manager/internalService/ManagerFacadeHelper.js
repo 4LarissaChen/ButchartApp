@@ -24,21 +24,27 @@ exports.scheduleFlorists = function (date) {
   })
 }
 
-exports.getFlorist = function (userId, storeId) {
+exports.getFlorist = function (userId) {
   var UserMicroService = loopback.findModel("UserMicroService");
-  var StatisticsMicroService = loopback.findModel("StatisticsMicroService");
-  let store, florists;
-  return UserMicroService.StoreAPI_getStoreByManager(userId).then(result => {
-    store = result.obj;
-    return UserMicroService.FloristAPI_getFloristList();
-  }).then(result => {
-    florists = result.obj;
-    let resp = [];
-    store.florists.forEach(floristId => {
-      let florist = florists.find(f => f.userId == floristId);
-      if (florist)
-        resp.push(florist);
+  return UserMicroService.FloristAPI_getFloristList().then(result => {
+    return Promise.map(result.obj, florist => {
+      return UserMicroService.UserAPI_getUserInfo({ userId: florist.userId }).then(result => {
+        result.obj.florist = florist;
+        return result.obj;
+      });
     });
-    return resp;
-  })
+  }).then(result => {
+    return Promise.map(result, florist => {
+      return UserMicroService.AuthorizationAPI_getButchartUserRoles({ userId: florist.florist.userId }).then(result => {
+        if (result.obj.indexOf("Admin") != -1) {
+          florist.role = "Admin";
+        } else if (result.obj.indexOf("Manager") != -1) {
+          florist.role = "Manager";
+        } else {
+          florist.role = "Florist";
+        }
+        return florist;
+      });
+    });
+  });
 }
