@@ -74,7 +74,7 @@ var getWXAccessTokenBatchJob = function () {
       return rp(option).then(result => {
         result = JSON.parse(result);
         global.setting.wxConfig["jsapi_ticket"] = result.ticket;
-        console.log("getJsapi_ticket" + global.settings.wxConfig.jsapi_ticket + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
+        console.log("getJsapi_ticket: " + global.settings.wxConfig.jsapi_ticket + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
         return;
       });
     })
@@ -90,7 +90,7 @@ module.exports = function (app) {
   return wechatPayService.getAccessToken().then(result => {
     console.log(moment().local().format('YYYY-MM-DD HH:mm:ss') + ": " + result.access_token);
     global.settings.wxConfig = { access_token: result.access_token };
-    console.log("getSignature: " + global.settings.wxConfig.access_token + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
+    console.log("access_token: " + global.settings.wxConfig.access_token + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
     let url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + global.settings.wxConfig.access_token + "&type=jsapi";
     let option = {
       method: 'GET',
@@ -99,7 +99,7 @@ module.exports = function (app) {
     return rp(option).then(result => {
       result = JSON.parse(result);
       global.settings.wxConfig["jsapi_ticket"] = result.ticket;
-      console.log("getJsapi_ticket" + global.settings.wxConfig.jsapi_ticket + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
+      console.log("jsapi_ticket: " + global.settings.wxConfig.jsapi_ticket + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
       return;
     });
   })
