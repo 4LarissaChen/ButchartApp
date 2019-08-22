@@ -238,7 +238,12 @@ module.exports = function (ManagerFacadeAPI) {
         let dayNo = Object.keys(schedule[storeId]);
         dayNo.forEach(no => {
           let floristIds = schedule[storeId][no];
-          resp[store.name][no] = floristIds.map(floristId => result.florists.find(f => f.florist.userId == floristId).fullname);
+          resp[store.name][no] = floristIds.map(floristId => {
+            let f = result.florists.find(f => f.florist.userId == floristId);
+          return {
+            floristId: f.florist.userId,
+            name: f.fullname
+          }});
         })
       })
       return resp;
