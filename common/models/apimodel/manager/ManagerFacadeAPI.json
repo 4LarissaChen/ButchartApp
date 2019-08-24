@@ -111,6 +111,18 @@
       "principalId": "Manager",
       "permission": "ALLOW",
       "property": "getSchedule"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Manager",
+      "permission": "ALLOW",
+      "property": "closeTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Florist",
+      "permission": "ALLOW",
+      "property": "closeTransaction"
     }
   ],
   "methods": {},
