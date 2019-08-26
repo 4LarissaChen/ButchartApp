@@ -123,6 +123,7 @@ class WechatPayService {
     formData += "<trade_type>" + settings.trade_type + "</trade_type>"; //类型APP
     formData += "<sign>" + self.generatePaySignment(attach, body, nonce_str, notify_url, out_trade_no, ip, total_fee, settings.trade_type, openid) + "</sign>";
     formData += "</xml>";
+    console.log(formData);
     let option = {
       method: 'POST',
       url: url,
