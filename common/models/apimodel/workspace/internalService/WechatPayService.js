@@ -105,7 +105,7 @@ class WechatPayService {
     var mch_id = settings.mch_id;//商户号
     var notify_url = 'http://wxpay.weixin.qq.com/pub_v2/pay/notify.v2.php';//回调通知地址
     var out_trade_no = transactionId;//订单号
-    var total_fee = totalPrice * 100;//商品价格
+    var total_fee = (totalPrice * 100).toString();//商品价格
     var attach = 'Butchart布查德';
     var body = "花束产品"; //客户端商品描述
     var nonce_str = self.createNonceStr();//随机32位之内字符串
