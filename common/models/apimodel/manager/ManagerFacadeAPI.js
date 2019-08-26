@@ -544,4 +544,19 @@ module.exports = function (ManagerFacadeAPI) {
       cb(err, null);
     });
   }
+
+  ManagerFacadeAPI.remoteMethod('closeTransaction', {
+    description: "关闭订单.",
+    accepts: [{ arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/transaction/:transactionId/close', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.closeTransaction = function (transactionId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: { "status": "Closed" } }).then(result => {
+      cb(null, { isClosed: true });
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
 }
