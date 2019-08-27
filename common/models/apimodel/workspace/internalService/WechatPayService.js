@@ -137,14 +137,14 @@ class WechatPayService {
         resp = data;
         return;
       });
-      console.log("统一支付API结果：" + JSON.stringify(resp));
       data = {
         "appId": settings.appid,     //公众号名称，由商户传入
         "timeStamp": parseInt(new Date().getTime() / 1000).toString(),         //时间戳，自1970年以来的秒数
-        "nonceStr": self.createNonceStr(), //随机串 // 通过统一下单接口获取
+        "nonceStr": resp.nonce_str, //随机串 // 通过统一下单接口获取
         "package": "prepay_id=" + resp.prepay_id,
         "signType": "MD5",         //微信签名方式：
       }
+      console.log("二次加密data: " + JSON.stringify(data));
       data.paySign = self.sign(data);
       return self.getSignature(data.timeStamp, data.nonceStr)
     }).then(result => {
