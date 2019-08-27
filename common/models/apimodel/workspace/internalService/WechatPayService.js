@@ -137,6 +137,7 @@ class WechatPayService {
         resp = data;
         return;
       });
+      console.log("统一支付API结果：" + JSON.stringify(resp));
       data = {
         "appId": settings.appid,     //公众号名称，由商户传入
         "timeStamp": parseInt(new Date().getTime() / 1000).toString(),         //时间戳，自1970年以来的秒数
