@@ -22,6 +22,10 @@
     },
     "date": {
       "type": "string"
+    },
+    "pics": {
+      "type": ["string"],
+      "required": true
     }
   },
   "validations": [],

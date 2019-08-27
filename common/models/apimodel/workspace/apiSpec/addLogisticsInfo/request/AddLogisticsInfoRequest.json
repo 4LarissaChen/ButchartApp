@@ -10,6 +10,10 @@
 		"trackingId": {
 			"type": "string",
 			"required": true
+		},
+		"pics": {
+			"type": ["string"],
+			"required": true
 		}
 	},
 	"validations": [],
