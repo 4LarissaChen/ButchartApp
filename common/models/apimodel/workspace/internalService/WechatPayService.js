@@ -87,7 +87,7 @@ class WechatPayService {
   getSignature(timestamp, noncestr) {
 
     let data = {
-      url: "https://www.thebutchart.cn/pay",
+      url: "https://www.thebutchart.cn/pay/",
       timestamp: timestamp,
       noncestr: noncestr,
       jsapi_ticket: global.settings.wxConfig.jsapi_ticket
