@@ -151,6 +151,7 @@ class WechatPayService {
       data.jsapi_ticket = global.settings.wxConfig.jsapi_ticket;
       data.access_token = global.settings.wxConfig.jsapi_ticket;
       data.signature = result;
+      console.log("signature: " + result + ", paySign: " + data.paySign);
       return data;
     }).catch(err => {
       throw err;
