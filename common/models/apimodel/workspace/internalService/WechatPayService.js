@@ -108,7 +108,7 @@ class WechatPayService {
     var total_fee = totalPrice * 100;//商品价格
     var attach = 'Butchart布查德';
     var body = "花束产品"; //客户端商品描述
-    var nonce_str = self.createNonceStr();//随机32位之内字符串
+    var nonce_str = self.randomWord(false, 32);//随机32位之内字符串
     var formData = "<xml>";
     formData += "<appid>" + appid + "</appid>"; //appid
     formData += "<attach>" + attach + "</attach>"; //附加数据
@@ -139,8 +139,8 @@ class WechatPayService {
       });
       data = {
         "appId": settings.appid,     //公众号名称，由商户传入
-        "timeStamp": parseInt(new Date().getTime() / 1000).toString(),         //时间戳，自1970年以来的秒数
-        "nonceStr": resp.nonce_str, //随机串 // 通过统一下单接口获取
+        "timeStamp": moment().unix().toString(),         //时间戳，自1970年以来的秒数
+        "nonceStr": nonce_str, //随机串 // 通过统一下单接口获取
         "package": "prepay_id=" + resp.prepay_id,
         "signType": "MD5",         //微信签名方式：
       }
@@ -176,6 +176,22 @@ class WechatPayService {
     console.log(crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase());
     return crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
   };
+
+  randomWord(randomFlag, min, max) {
+    var str = "",
+      range = min,
+      arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+    // 随机产生
+    if (randomFlag) {
+      range = Math.round(Math.random() * (max - min)) + min;
+    }
+    for (var i = 0; i < range; i++) {
+      pos = Math.round(Math.random() * (arr.length - 1));
+      str += arr[pos];
+    }
+    return str;
+  }
 }
 
 module.exports = WechatPayService;
