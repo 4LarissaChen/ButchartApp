@@ -184,10 +184,10 @@ class WechatPayService {
 
     // 随机产生
     if (randomFlag) {
-      range = Math.round(Math.random() * (max - min)) + min;
+      let range = Math.round(Math.random() * (max - min)) + min;
     }
     for (var i = 0; i < range; i++) {
-      pos = Math.round(Math.random() * (arr.length - 1));
+      let pos = Math.round(Math.random() * (arr.length - 1));
       str += arr[pos];
     }
     return str;
