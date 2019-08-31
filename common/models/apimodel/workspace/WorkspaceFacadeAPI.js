@@ -73,10 +73,10 @@ module.exports = function (WorkspaceFacadeAPI) {
       return;
     }).then(() => {
       let wechatPayService = new WechatPayService();
-      let payService = new PayService();
+      //let payService = new PayService();
       return wechatPayService.getOpenid(orderParams.code).then(result => {
-        return payService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
-        //return wechatPayService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
+        //return payService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
+        return wechatPayService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
       })
     }).then(result => {
       cb(null, { createdId: transactionId, resp: result });
