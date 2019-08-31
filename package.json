@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@alicloud/sms-sdk": "^1.1.6",
+    "@sigodenh/wechatpay": "^1.1.0",
+    "@sigodenjs/wechatpay": "^2.1.1",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
     "helmet": "^3.10.0",

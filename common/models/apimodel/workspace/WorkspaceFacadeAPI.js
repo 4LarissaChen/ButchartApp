@@ -9,6 +9,7 @@ var messageUtils = require('../../../../server/utils/messageUtils.js');
 var apiUtils = require('../../../../server/utils/apiUtils.js');
 var WechatPayService = require('./internalService/WechatPayService.js');
 var WorkspaceFacadeService = require("./internalService/WorkspaceFacadeService.js");
+var PayService = require('./internalService/PayService.js');
 
 module.exports = function (WorkspaceFacadeAPI) {
   apiUtils.disableRelatedModelRemoteMethod(WorkspaceFacadeAPI);
@@ -72,8 +73,10 @@ module.exports = function (WorkspaceFacadeAPI) {
       return;
     }).then(() => {
       let wechatPayService = new WechatPayService();
+      let payService = new PayService();
       return wechatPayService.getOpenid(orderParams.code).then(result => {
-        return wechatPayService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
+        return payService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
+        //return wechatPayService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
       })
     }).then(result => {
       cb(null, { createdId: transactionId, resp: result });
