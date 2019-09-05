@@ -100,8 +100,8 @@ app.use('/notify', function (req, res, next) {
         }
         let returnCode = 'SUCCESS', returnResult = 'OK';
         let replyXmlTpl = '<xml>' +
-          '<return_code><![CDATA[%returnCode%]]></return_code>' +
-          '<return_msg><![CDATA[%returnResult%]]></return_msg>' +
+          '<return_code><![CDATA[SUCCESS]]></return_code>' +
+          '<return_msg><![CDATA[OK]]></return_msg>' +
           '</xml>'
         return wechatPay.getTransactionStatus(receivedObj.transaction_id).then(result => {
           console.log("微信订单查询结果: " + JSON.stringify(result));
