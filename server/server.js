@@ -51,7 +51,7 @@ boot(app, __dirname, function (err) {
     app.start();
 });
 
-app.use('/status', function (req, res, next) {
+app.use('/notify', function (req, res, next) {
   var UserMicroService = loopback.findModel('UserMicroService');
   const getRawBody = require('raw-body');
   var contentType = require('content-type');
