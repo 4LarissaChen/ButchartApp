@@ -73,7 +73,7 @@ app.use('/notify', function (req, res, next) {
       receivedObj = data;
       return;
     });
-    console.log(receivedObj);
+    console.log("Received data: " + receivedObj);
     if (receivedObj.return_code == 'FAIL') {
       //ctx.status = 200
       //ctx.body = '<xml><return_code><![CDATA[FAIL]]></return_code></xml>'
@@ -93,7 +93,6 @@ app.use('/notify', function (req, res, next) {
     return new Promise((resolve, reject) => {
       resolve(UserMicroService.TransactionAPI_getTransactionById({ transactionId: receivedObj.out_trade_no }).then(result => {
         var transaction = result.obj;
-        console.log(transaction);
         if (transaction.status == 'Payed') {
           return res.send('<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>');
         }
@@ -103,7 +102,7 @@ app.use('/notify', function (req, res, next) {
           '<return_msg><![CDATA[%returnResult%]]></return_msg>' +
           '</xml>'
         return wechatPay.getTransactionStatus(receivedObj.transaction_id).then(result => {
-          console.log(result);
+          console.log("微信订单查询结果: " + result);
           if (result.trade_state && result.trade_state == 'SUCCESS') {
             return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transaction._id, updateData: { status: 'Payed' } }).then(() => {
               return res.send(replyXmlTpl);
