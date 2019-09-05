@@ -11,16 +11,20 @@ const config = {
   mchid: settings.mch_id,
   partnerKey: settings.key,
   pfx: fs.readFileSync(global.appRoot + 'butchart.p12'),
-  notify_url: '支付回调网址'
+  notify_url: 'https://www.thebutchart.cn:4000/notify'
 };
 class WechatPay {
-  wechatPay(transactionId, code) {
+  wechatPay(transactionId, orderParams) {
     let self = this;
     let api = new tenpay(config, true);
-    return self.getOpenid(code).then(openid => {
+    let body = "";
+    orderParams.productList.forEach(product => {
+      body += product.name + " x " + product.quantity + "; ";
+    })
+    return self.getOpenid(orderParams.code).then(openid => {
       return api.unifiedOrder({
         out_trade_no: transactionId,
-        body: '鲜花产品',
+        body: body,
         total_fee: '1',
         openid: openid
       });
@@ -29,7 +33,11 @@ class WechatPay {
         prepay_id: result.prepay_id
       });
     })
+  }
 
+  getTransactionStatus(transactionId) {
+    let api = new tenpay(config, true);
+    return api.orderQuery({ transaction_id: transactionId });
   }
 
   getOpenid(code) {

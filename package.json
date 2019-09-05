@@ -15,6 +15,7 @@
     "@sigodenh/wechatpay": "^1.1.0",
     "@sigodenjs/wechatpay": "^2.1.1",
     "compression": "^1.0.3",
+    "content-type": "^1.0.4",
     "cors": "^2.5.2",
     "helmet": "^3.10.0",
     "koa": "^2.7.0",

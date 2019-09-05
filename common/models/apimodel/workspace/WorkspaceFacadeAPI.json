@@ -195,6 +195,12 @@
       "principalId": "Admin",
       "permission": "ALLOW",
       "property": "getAddressById"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Admin",
+      "permission": "ALLOW",
+      "property": "checkTransaction"
     }
   ],
   "methods": {},

@@ -7,19 +7,18 @@ var rp = require('request-promise');
 var moment = require('moment');
 
 class WechatPayService {
-  generatePaySignment(attach, body, nonce_str, notify_url, out_trade_no, spbill_create_ip, total_fee, trade_type, openid) {
+  generatePaySignment(payData) {
     var data = {
-      appid: settings.appid,
-      attach: attach,
-      body: body,
-      mch_id: settings.mch_id,
-      nonce_str: nonce_str,
-      notify_url: notify_url,
-      openid: openid,
-      out_trade_no: out_trade_no,
-      spbill_create_ip: spbill_create_ip,
-      total_fee: total_fee,
-      trade_type: trade_type
+      appid: payData.appid,
+      body: payData.body,
+      mch_id: payData.mch_id,
+      nonce_str: payData.nonce_str,
+      notify_url: payData.notify_url,
+      openid: payData.openid,
+      out_trade_no: payData.out_trade_no,
+      spbill_create_ip: payData.spbill_create_ip,
+      total_fee: payData.total_fee,
+      trade_type: payData.trade_type
     };
     return this.sign(data);
   }

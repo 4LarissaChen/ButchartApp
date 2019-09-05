@@ -50,6 +50,20 @@ module.exports = function (WorkspaceFacadeAPI) {
     });
   }
 
+  WorkspaceFacadeAPI.remoteMethod('checkTransaction', {
+    description: "查询订单支付状态.",
+    accepts: [{ arg: 'transactionId', type: 'string', required: true, description: "Transaction Id.", http: { source: 'path' } }],
+    returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
+    http: { path: '/workspace/transaction/:transactionId/checkTransaction', verb: 'get', status: 200, errorStatus: 500 }
+  });
+  WorkspaceFacadeAPI.checkTransaction = function (transactionId, cb) {
+    let wechatPay = new WechatPay();
+    wechatPay.getTransactionStatus(transactionId).then(result => {
+      cb(null, result);
+    });
+  }
+
+
   WorkspaceFacadeAPI.remoteMethod('createTransaction', {
     description: "创建订单.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
@@ -74,7 +88,7 @@ module.exports = function (WorkspaceFacadeAPI) {
     }).then(() => {
       let wechatPayService = new WechatPayService();
       let wechatPay = new WechatPay();
-      return wechatPay.wechatPay(transactionId, orderParams.code);
+      return wechatPay.wechatPay(transactionId, orderParams);
       // return wechatPayService.getOpenid(orderParams.code).then(result => {
       //   //return payService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
       //   return wechatPayService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
