@@ -100,29 +100,6 @@ module.exports = function (WorkspaceFacadeAPI) {
     })
   }
 
-  WorkspaceFacadeAPI.remoteMethod('payTransaction', {
-    description: "支付订单.",
-    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id.", http: { source: 'path' } },
-    { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } }],
-    returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: "", root: true },
-    http: { path: '/workspace/user/:userId/transactionId/:transactionId/payTransaction', verb: 'put', status: 200, errorStatus: 500 }
-  });
-  WorkspaceFacadeAPI.payTransaction = function (userId, transactionId, cb) {
-    var UserMicroService = loopback.findModel("UserMicroService");
-    var wechatPayService = new WechatPayService();
-    //TBD third part pay.
-
-    let updateData = {
-      status: "Payed",
-      payedDate: moment().local().format('YYYY-MM-DD HH:mm:ss')
-    }
-    UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: updateData }).then(() => {
-      cb(null, { isSuccess: true });
-    }).catch(err => {
-      cb(err, null);
-    })
-  }
-
   WorkspaceFacadeAPI.remoteMethod('getUserOwnedTransactions', {
     description: "获取用户所有的订单.",
     accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },

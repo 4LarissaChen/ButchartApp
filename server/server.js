@@ -95,7 +95,7 @@ app.use('/notify', function (req, res, next) {
         var transaction = result.obj;
         console.log(transaction);
         if (transaction.status == 'Payed') {
-          return send('<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>');
+          return res.send('<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>');
         }
         let returnCode = 'SUCCESS', returnResult = 'OK';
         let replyXmlTpl = '<xml>' +
@@ -105,7 +105,7 @@ app.use('/notify', function (req, res, next) {
         return wechatPay.getTransactionStatus(receivedObj.transaction_id).then(result => {
           console.log(result);
           if (result.trade_state && result.trade_state == 'SUCCESS') {
-            return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transaction._id, status: 'Payed' }).then(() => {
+            return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transaction._id, updateData: { status: 'Payed' } }).then(() => {
               return res.send(replyXmlTpl);
             });
           } else {
