@@ -73,11 +73,12 @@ app.use('/notify', function (req, res, next) {
       receivedObj = data;
       return;
     });
-    console.log("Received data: " + receivedObj);
+    console.log("Received data: " + JSON.stringify(receivedObj));
     if (receivedObj.return_code == 'FAIL') {
       //ctx.status = 200
       //ctx.body = '<xml><return_code><![CDATA[FAIL]]></return_code></xml>'
       res.header('Content-Type', 'application/xml; charset=utf-8')
+      console.log("支付失败");
       return res.send('<xml><return_code><![CDATA[FAIL]]></return_code></xml>')
     }
     let respSign = receivedObj.sign;
@@ -94,6 +95,7 @@ app.use('/notify', function (req, res, next) {
       resolve(UserMicroService.TransactionAPI_getTransactionById({ transactionId: receivedObj.out_trade_no }).then(result => {
         var transaction = result.obj;
         if (transaction.status == 'Payed') {
+          console.log("订单已支付，返回SUCCESS");
           return res.send('<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>');
         }
         let returnCode = 'SUCCESS', returnResult = 'OK';
@@ -102,9 +104,10 @@ app.use('/notify', function (req, res, next) {
           '<return_msg><![CDATA[%returnResult%]]></return_msg>' +
           '</xml>'
         return wechatPay.getTransactionStatus(receivedObj.transaction_id).then(result => {
-          console.log("微信订单查询结果: " + result);
+          console.log("微信订单查询结果: " + JSON.stringify(result));
           if (result.trade_state && result.trade_state == 'SUCCESS') {
             return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transaction._id, updateData: { status: 'Payed' } }).then(() => {
+              console.log("订单状态更改成功，返回SUCCESS");
               return res.send(replyXmlTpl);
             });
           } else {
@@ -112,6 +115,7 @@ app.use('/notify', function (req, res, next) {
             replyXmlTpl = replyXmlTpl
               .replace(/%returnCode%/, returnCode)
               .replace(/%returnResult%/, returnResult);
+            console.log("查询结果有误，返回FAIL");
             return res.send(replyXml);
           }
         });
