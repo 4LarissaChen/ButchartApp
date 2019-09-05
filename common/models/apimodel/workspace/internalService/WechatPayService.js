@@ -8,19 +8,7 @@ var moment = require('moment');
 
 class WechatPayService {
   generatePaySignment(payData) {
-    var data = {
-      appid: payData.appid,
-      body: payData.body,
-      mch_id: payData.mch_id,
-      nonce_str: payData.nonce_str,
-      notify_url: payData.notify_url,
-      openid: payData.openid,
-      out_trade_no: payData.out_trade_no,
-      spbill_create_ip: payData.spbill_create_ip,
-      total_fee: payData.total_fee,
-      trade_type: payData.trade_type
-    };
-    return this.sign(data);
+    return this.sign(payData);
   }
 
   sign(data) {
