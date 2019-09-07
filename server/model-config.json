@@ -187,5 +187,9 @@
   "OverViewStatisticsEntry": {
     "dataSource": "db",
     "public": true
+  },
+  "WechatPayInfo": {
+    "dataSource": "db",
+    "public": true
   }
 }

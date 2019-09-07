@@ -1,0 +1,38 @@
+{
+  "name": "WechatPayInfo",
+  "base": "Model",
+  "idInjection": false,
+  "strict": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": false,
+    "appId": {
+      "type": "string"
+    },
+    "timeStamp": {
+      "type": "string"
+    },
+    "nonceStr": {
+      "type": "string"
+    },
+    "package": {
+      "type": "string"
+    },
+    "signType": {
+      "type": "string"
+    },
+    "paySign": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "mixins": {}
+}

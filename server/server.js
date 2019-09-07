@@ -61,6 +61,7 @@ app.use('/notify', function (req, res, next) {
   let receivedXml;
   let wechatPayService = new WechatPayService();
   let wechatPay = new WechatPay();
+  let moment = require('moment');
   return getRawBody(req, {
     length: req.headers['content-length'],
     limit: '1mb',
@@ -106,7 +107,7 @@ app.use('/notify', function (req, res, next) {
         return wechatPay.getTransactionStatus(receivedObj.transaction_id).then(result => {
           console.log("微信订单查询结果: " + JSON.stringify(result));
           if (result.trade_state && result.trade_state == 'SUCCESS') {
-            return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transaction._id, updateData: { status: 'Payed' } }).then(() => {
+            return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transaction._id, updateData: { status: 'Payed', payInfo: null, payedDate: moment().local().format('YYYY-MM-DD HH:mm:ss') } }).then(() => {
               console.log("订单状态更改成功，返回SUCCESS");
               return res.send(replyXmlTpl);
             });

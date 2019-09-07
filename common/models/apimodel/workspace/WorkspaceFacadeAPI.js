@@ -75,7 +75,7 @@ module.exports = function (WorkspaceFacadeAPI) {
 
   WorkspaceFacadeAPI.createTransaction = function (userId, orderParams, req, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
-    var transactionId;
+    var transactionId, resp;
     var ip = req.headers['x-forwarded-for'] || // 判断是否有反向代理 IP
       req.connection.remoteAddress || // 判断 connection 的远程 IP
       req.socket.remoteAddress || // 判断后端的 socket 的 IP
@@ -88,13 +88,16 @@ module.exports = function (WorkspaceFacadeAPI) {
     }).then(() => {
       let wechatPayService = new WechatPayService();
       let wechatPay = new WechatPay();
-      return wechatPay.wechatPay(transactionId, orderParams);
+      return wechatPay.wechatPay(transactionId, orderParams).then(result => {
+        resp = result;
+        return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: { payInfo: result } });
+      });
       // return wechatPayService.getOpenid(orderParams.code).then(result => {
       //   //return payService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
       //   return wechatPayService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
       // })
-    }).then(result => {
-      cb(null, { createdId: transactionId, resp: result });
+    }).then(() => {
+      cb(null, { createdId: transactionId, resp: resp });
     }).catch(err => {
       cb(err, null);
     })
@@ -538,10 +541,26 @@ module.exports = function (WorkspaceFacadeAPI) {
     returns: { arg: 'resp', type: 'Transaction', description: '', root: true },
     http: { path: '/workspace/user/:userId/transaction/:transactionId/get', verb: 'get', status: 200, errorStatus: [500] }
   });
-  WorkspaceFacadeAPI.getTransactionById = function (userId, transactionId, cb){
+  WorkspaceFacadeAPI.getTransactionById = function (userId, transactionId, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
       cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('repayTransaction', {
+    description: "未支付订单继续支付.",
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "Use Id", http: { source: 'path' } },
+    { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: 'WechatPayInfo', description: '', root: true },
+    http: { path: '/workspace/user/:userId/transaction/:transactionId/repayTransaction', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.repayTransaction = function (userId, transactionId, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
+      cb(null, result.obj.payInfo);
     }).catch(err => {
       cb(err, null);
     });

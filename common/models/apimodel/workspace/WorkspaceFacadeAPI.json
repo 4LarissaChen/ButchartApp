@@ -213,6 +213,12 @@
       "principalId": "Admin",
       "permission": "ALLOW",
       "property": "getTransactionById"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Customer",
+      "permission": "ALLOW",
+      "property": "repayTransaction"
     }
   ],
   "methods": {},
