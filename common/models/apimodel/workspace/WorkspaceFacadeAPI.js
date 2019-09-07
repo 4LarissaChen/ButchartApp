@@ -530,4 +530,20 @@ module.exports = function (WorkspaceFacadeAPI) {
       cb(err, null);
     });
   }
+
+  WorkspaceFacadeAPI.remoteMethod('getTransactionById', {
+    description: "通过ID获取订单详情.",
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "Use Id", http: { source: 'path' } },
+    { arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } }],
+    returns: { arg: 'resp', type: 'Transaction', description: '', root: true },
+    http: { path: '/workspace/user/:userId/transaction/:transactionId/get', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getTransactionById = function (userId, transactionId, cb){
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
 }

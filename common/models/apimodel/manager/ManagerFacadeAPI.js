@@ -240,10 +240,11 @@ module.exports = function (ManagerFacadeAPI) {
           let floristIds = schedule[storeId][no];
           resp[store.name][no] = floristIds.map(floristId => {
             let f = result.florists.find(f => f.florist.userId == floristId);
-          return {
-            floristId: f.florist.userId,
-            name: f.fullname
-          }});
+            return {
+              floristId: f.florist.userId,
+              name: f.fullname
+            }
+          });
         })
       })
       return resp;
@@ -555,6 +556,22 @@ module.exports = function (ManagerFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: { "status": "Closed" } }).then(result => {
       cb(null, { isClosed: true });
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  ManagerFacadeAPI.remoteMethod('addAfterSalesCommentToTransaction', {
+    description: "添加售后处理结果.",
+    accepts: [{ arg: 'transactionId', type: 'string', required: true, description: "Transaction Id", http: { source: 'path' } },
+    { arg: 'comment', type: 'string', required: true, description: "comment", http: { source: 'query' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/manager/transaction/:transactionId/addAfterSalesCommentToTransaction', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  ManagerFacadeAPI.addAfterSalesCommentToTransaction = function (transactionId, comment, cb) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.TransactionAPI_addCommentToTransaction({ transactionId: transactionId, comment: comment }).then(result => {
+      cb(null, { isSuccess: true });
     }).catch(err => {
       cb(err, null);
     });

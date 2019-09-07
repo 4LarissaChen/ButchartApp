@@ -201,6 +201,18 @@
       "principalId": "Admin",
       "permission": "ALLOW",
       "property": "checkTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "UserSelf",
+      "permission": "ALLOW",
+      "property": "getTransactionById"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Admin",
+      "permission": "ALLOW",
+      "property": "getTransactionById"
     }
   ],
   "methods": {},

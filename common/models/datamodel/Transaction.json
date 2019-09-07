@@ -63,7 +63,10 @@
 		"expectedDeliverDate": {
       "type": "string",
       "required": true
-    }
+    },
+		"afterSalesComment": {
+      "type": "string"
+		}
 	},
 	"validations": [],
 	"relations": {},

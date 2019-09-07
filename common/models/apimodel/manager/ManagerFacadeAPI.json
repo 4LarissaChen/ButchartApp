@@ -123,6 +123,18 @@
       "principalId": "Florist",
       "permission": "ALLOW",
       "property": "closeTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Florist",
+      "permission": "ALLOW",
+      "property": "addAfterSalesCommentToTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Manager",
+      "permission": "ALLOW",
+      "property": "addAfterSalesCommentToTransaction"
     }
   ],
   "methods": {},
