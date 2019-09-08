@@ -35,6 +35,7 @@ exports.sendMessage = function (tel, code, option) {
 exports.querySentMessage = function (tel, code) {
 
   let smsClient = _getSMSClient();
+  console.log(tel + ": " + code);
   return smsClient.queryDetail({
     PhoneNumber: tel,
     SendDate: moment().format("YYYYMMDD"),
