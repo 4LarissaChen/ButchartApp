@@ -25,7 +25,7 @@ class WechatPay {
       return api.unifiedOrder({
         out_trade_no: transactionId,
         body: body,
-        total_fee: orderParams.totalPrice.toString(),
+        total_fee: (orderParams.totalPrice * 100).toString(),
         openid: openid
       });
     }).then(result => {
