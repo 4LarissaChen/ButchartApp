@@ -18,7 +18,7 @@ exports.sendMessage = function (tel, code, option) {
   return smsClient.sendSMS({
     PhoneNumbers: tel,
     SignName: '布查德鲜花',
-    TemplateCode: config.messageTemplate[option],
+    TemplateCode: config.messageTemplate["login"],
     TemplateParam: '{"code":"' + code + '"}'
   }).then(res => {
     let { Code } = res;
