@@ -385,6 +385,7 @@ module.exports = function (WorkspaceFacadeAPI) {
           item.description = result.obj.description;
           item.price = result.obj.price;
           item.type = result.obj.type;
+          item.pics = result.obj.pics;
           resp.push(item);
           return Promise.resolve();
         });
@@ -542,9 +543,24 @@ module.exports = function (WorkspaceFacadeAPI) {
     http: { path: '/workspace/user/:userId/transaction/:transactionId/get', verb: 'get', status: 200, errorStatus: [500] }
   });
   WorkspaceFacadeAPI.getTransactionById = function (userId, transactionId, cb) {
+    let transaction;
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
-      cb(null, result.obj);
+      transaction = result.obj;
+      return Promise.map(transaction.productList, product => {
+        return UserMicroService.ProductAPI_getProductById({ productId: product.productId }).then(result => {
+          return {
+            name: result.obj.name,
+            description: result.obj.description,
+            price: result.obj.price,
+            type: result.obj.type,
+            pics: result.obj.pics
+          };
+        });
+      });
+    }).then(result => {
+      transaction.productList = result;
+      cb(null, transaction);
     }).catch(err => {
       cb(err, null);
     });
