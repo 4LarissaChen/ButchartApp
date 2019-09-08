@@ -43,6 +43,7 @@ exports.querySentMessage = function (tel, code) {
   }).then(res => {
     if (res.Code === 'OK') {
       //处理发送详情内容
+      console.log(JSON.stringify(res));
       if (res.SmsSendDetailDTOs.SmsSendDetailDTO.length == 0)
         throw new Error('验证失败，请重新尝试！');
       else if (res.SmsSendDetailDTOs.SmsSendDetailDTO[0].Content.indexOf(code) != -1)
