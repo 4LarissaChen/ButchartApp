@@ -7,14 +7,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "wechatpay",
-      "program": "${workspaceFolder}/common/models/apimodel/workspace/internalService/index.js"
-    },
-    
-    
-    {
-      "type": "node",
-      "request": "launch",
       "name": "启动程序",
       "program": "${workspaceFolder}/server/server.js"
     }

@@ -219,6 +219,12 @@
       "principalId": "Customer",
       "permission": "ALLOW",
       "property": "repayTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "UserSelf",
+      "permission": "ALLOW",
+      "property": "getOpenIdByCode"
     }
   ],
   "methods": {},

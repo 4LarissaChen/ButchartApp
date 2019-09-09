@@ -14,19 +14,19 @@ const config = {
   notify_url: 'https://www.thebutchart.cn:4000/notify'
 };
 class WechatPay {
-  wechatPay(transactionId, orderParams) {
-    let self = this;
+  wechatPay(userId, transactionId, orderParams) {
+    let UserMicroService = loopback.findModel("UserMicroService");
     let api = new tenpay(config, true);
     let body = "";
     orderParams.productList.forEach(product => {
       body += product.name + " x " + product.quantity + "; ";
     })
-    return self.getOpenid(orderParams.code).then(openid => {
+    return UserMicroService.UserAPI_getUserOpenId({userId: userId}).then(result => {
       return api.unifiedOrder({
         out_trade_no: transactionId,
         body: body,
         total_fee: (orderParams.totalPrice * 100).toString(),
-        openid: openid
+        openid: result.openId
       });
     }).then(result => {
       return api.getPayParamsByPrepay({

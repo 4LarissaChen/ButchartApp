@@ -86,9 +86,8 @@ module.exports = function (WorkspaceFacadeAPI) {
         return UserMicroService.UserAPI_setDefaultFlorist({ userId: userId, floristId: orderParams.floristId });
       return;
     }).then(() => {
-      let wechatPayService = new WechatPayService();
       let wechatPay = new WechatPay();
-      return wechatPay.wechatPay(transactionId, orderParams).then(result => {
+      return wechatPay.wechatPay(userId, transactionId, orderParams).then(result => {
         resp = result;
         return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: { payInfo: result } });
       });
@@ -577,6 +576,25 @@ module.exports = function (WorkspaceFacadeAPI) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.TransactionAPI_getTransactionById({ transactionId: transactionId }).then(result => {
       cb(null, result.obj.payInfo);
+    }).catch(err => {
+      cb(err, null);
+    });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getOpenIdByCode', {
+    description: "根据code获取用户openId.",
+    accepts: [{ arg: 'userId', type: 'string', required: true, description: "User Id", http: { source: 'path' } },
+    { arg: 'code', type: 'string', required: true, description: "User code", http: { source: 'query' } }],
+    returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+    http: { path: '/workspace/user/:userId/getOpenIdByCode', verb: 'put', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getOpenIdByCode = function (userId, code) {
+    var UserMicroService = loopback.findModel("UserMicroService");
+    var wechatPay = new WechatPay();
+    wechatPay.getOpenid(code).then(result => {
+      return UserMicroService.UserAPI_setUserOpenId({ userId: userId, openId: result });
+    }).then(result => {
+      cb(null, result.obj);
     }).catch(err => {
       cb(err, null);
     });
