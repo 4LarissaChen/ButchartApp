@@ -588,7 +588,7 @@ module.exports = function (WorkspaceFacadeAPI) {
     returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
     http: { path: '/workspace/user/:userId/getOpenIdByCode', verb: 'put', status: 200, errorStatus: [500] }
   });
-  WorkspaceFacadeAPI.getOpenIdByCode = function (userId, code) {
+  WorkspaceFacadeAPI.getOpenIdByCode = function (userId, code, cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     var wechatPay = new WechatPay();
     wechatPay.getOpenid(code).then(result => {
