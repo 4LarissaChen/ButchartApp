@@ -27,7 +27,7 @@ class WechatPay {
         out_trade_no: transactionId,
         body: body,
         total_fee: (orderParams.totalPrice * 100).toString(),
-        openid: result.openId
+        openid: result.obj.openId
       });
     }).then(result => {
       return api.getPayParamsByPrepay({
