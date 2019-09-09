@@ -1,4 +1,5 @@
 var request = require('request');
+var loopback = require('loopback');
 var xml2js = require('xml2js');
 var fs = require('fs');
 var settings = JSON.parse(fs.readFileSync(global.appRoot + 'server/config.json')).features.wechatPay;
