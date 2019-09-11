@@ -16,6 +16,8 @@ exports.scheduleFlorists = function (date) {
     stores = result.obj;
     let weekday = moment(date).local().weekday().toString();
     return Promise.map(stores, store => {
+      if (schedule[store._id] == null || schedule[store._id][weekday] == null)
+        return;
       store.florists = schedule[store._id][weekday];
       return UserMicroService.StoreAPI_updateStore({ storeId: store._id, updateData: store });
     })

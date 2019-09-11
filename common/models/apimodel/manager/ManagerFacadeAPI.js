@@ -322,6 +322,7 @@ module.exports = function (ManagerFacadeAPI) {
       }
       return StatisticsMicroService.StatisticsAPI_statisticsLocationBatchJob({ data: data });
     }).then(() => {
+      console.log("Statistics Job Finished.");
       return Promise.resolve({ isSuccess: true });
     }).catch(err => {
       return Promise.reject(err);

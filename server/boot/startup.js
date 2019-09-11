@@ -52,7 +52,8 @@ var starlocationBatchJob = function () {
 var getWXAccessTokenBatchJob = function () {
   let later = require('later');
   let wechatPayService = new WechatPayService();
-  let sched = later.parse.text('every 110 mins');//at 4:30 am every 1 day of the month  //at 1:36 pm
+  let UserMicroService = loopback.findModel("UserMicroService");
+  let sched = later.parse.text('every 110 mins');
   later.date.localTime();
   let t = later.setInterval(() => {
     console.log("Get wechat access_token at " + moment().local().format('YYYY-MM-DD HH:mm:ss') + ".");
@@ -75,7 +76,7 @@ var getWXAccessTokenBatchJob = function () {
         result = JSON.parse(result);
         global.setting.wxConfig["jsapi_ticket"] = result.ticket;
         console.log("getJsapi_ticket: " + global.settings.wxConfig.jsapi_ticket + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
-        return;
+        return UserMicroService.SystemAPI_upsertAccessToken({ access_token: global.settings.wxConfig.access_token ? global.settings.wxConfig.access_token : "access_token" });
       });
     })
   }, sched);
@@ -87,6 +88,7 @@ module.exports = function (app) {
   starlocationBatchJob();
   getWXAccessTokenBatchJob();
   let wechatPayService = new WechatPayService();
+  let UserMicroService = loopback.findModel("UserMicroService");
   return wechatPayService.getAccessToken().then(result => {
     console.log(moment().local().format('YYYY-MM-DD HH:mm:ss') + ": " + result.access_token);
     global.settings.wxConfig = { access_token: result.access_token };
@@ -100,7 +102,7 @@ module.exports = function (app) {
       result = JSON.parse(result);
       global.settings.wxConfig["jsapi_ticket"] = result.ticket;
       console.log("jsapi_ticket: " + global.settings.wxConfig.jsapi_ticket + " at " + moment().local().format('YYYY-MM-DD HH:mm:ss'));
-      return;
+      return UserMicroService.SystemAPI_upsertAccessToken({ access_token: global.settings.wxConfig.access_token ? global.settings.wxConfig.access_token : "access_token" });
     });
   })
 }
