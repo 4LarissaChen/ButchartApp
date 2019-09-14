@@ -83,7 +83,9 @@ module.exports = function (WorkspaceFacadeAPI) {
     UserMicroService.TransactionAPI_createTransaction({ userId: userId, createData: orderParams }).then(result => {
       transactionId = result.obj.createdId;
       if (orderParams.floristId && orderParams.floristId != "")
-        return UserMicroService.UserAPI_setDefaultFlorist({ userId: userId, floristId: orderParams.floristId });
+        return UserMicroService.UserAPI_setDefaultFlorist({ userId: userId, floristId: orderParams.floristId }).then(() => {
+          return UserMicroService.FloristAPI_updateCustomerPool({ floristId: orderParams.floristId, customerId: userId });
+        });
       return;
     }).then(() => {
       let wechatPay = new WechatPay();
@@ -91,10 +93,7 @@ module.exports = function (WorkspaceFacadeAPI) {
         resp = result;
         return UserMicroService.TransactionAPI_updateTransaction({ transactionId: transactionId, updateData: { payInfo: result } });
       });
-      // return wechatPayService.getOpenid(orderParams.code).then(result => {
-      //   //return payService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
-      //   return wechatPayService.wechatH5Pay(transactionId, orderParams.totalPrice + orderParams.logistics.freight, (ip == ':::1' ? '127.0.0.1' : ip), result);
-      // })
+      return;
     }).then(() => {
       cb(null, { createdId: transactionId, resp: resp });
     }).catch(err => {
