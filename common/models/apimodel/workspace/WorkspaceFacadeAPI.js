@@ -608,13 +608,14 @@ module.exports = function (WorkspaceFacadeAPI) {
   WorkspaceFacadeAPI.getHomePagePics = function (cb) {
     let cmdStr = "ls /opt/butchart/files/images/homepage";
     let respArr = execSync(cmdStr).toString().split("\n");
-    let resp = [];
+    let resp = {};
     respArr.forEach(element => {
       if (element == null || element == "")
         return;
+      let key = element.split('.')[0];
       element = "http://www.thebutchart.cn/homepage/" + element;
-      resp.push(element);
+      resp[key] = element;
     });
-    cb(null, { pics: resp });
+    cb(null, resp);
   }
 }
