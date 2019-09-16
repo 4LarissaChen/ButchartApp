@@ -614,6 +614,6 @@ module.exports = function (WorkspaceFacadeAPI) {
         element = "http://www.thebutchart.cn/homepage/" + element;
       resp.push(element);
     });
-    cb(null, resp);
+    cb(null, { pics: resp });
   }
 }
