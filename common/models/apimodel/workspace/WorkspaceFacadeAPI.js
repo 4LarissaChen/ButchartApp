@@ -625,8 +625,9 @@ module.exports = function (WorkspaceFacadeAPI) {
           mapping: resp,
           date: moment().local().format("YYYY-MM-DD HH:mm:ss")
         };
-      }
-    }else{
+      } else
+        resp = global.settings.homepage.mapping;
+    } else {
       let result = execSync(cmdStr);
       let respArr = result.toString().split("\n");
       respArr.forEach(element => {
@@ -641,7 +642,6 @@ module.exports = function (WorkspaceFacadeAPI) {
         date: moment().local().format("YYYY-MM-DD HH:mm:ss")
       };
     }
-
-    cb(null, resp);
   }
+  cb(null, resp);
 }
