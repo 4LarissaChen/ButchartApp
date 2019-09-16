@@ -135,6 +135,12 @@
       "principalId": "Manager",
       "permission": "ALLOW",
       "property": "addAfterSalesCommentToTransaction"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Manager",
+      "permission": "ALLOW",
+      "property": "uploadSchedule"
     }
   ],
   "methods": {},
