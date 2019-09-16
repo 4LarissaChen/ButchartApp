@@ -607,15 +607,41 @@ module.exports = function (WorkspaceFacadeAPI) {
   });
   WorkspaceFacadeAPI.getHomePagePics = function (cb) {
     let cmdStr = "ls /opt/butchart/files/images/homepage";
-    let respArr = execSync(cmdStr).toString().split("\n");
     let resp = {};
-    respArr.forEach(element => {
-      if (element == null || element == "")
-        return;
-      let key = element.split('.')[0];
-      element = "http://www.thebutchart.cn/homepage/" + element;
-      resp[key] = element;
-    });
+    if (global.settings.homepage && global.settings.homepage.mapping && global.settings.homepage.date) {
+      let oldDate = moment(global.settings.homepage.date.split(' ')[0]);
+      let date = moment().local().format('YYYY-MM-DD HH:mm:ss').split(' ')[0];
+      if (moment(oldDate).add(1, 'd').dayOfYear() == moment(date).dayOfYear()) {
+        let result = execSync(cmdStr);
+        let respArr = result.toString().split("\n");
+        respArr.forEach(element => {
+          if (element == null || element == "")
+            return;
+          let key = element.split('.')[0];
+          element = "http://www.thebutchart.cn/homepage/" + element;
+          resp[key] = element;
+        });
+        global.settings.homepage = {
+          mapping: resp,
+          date: moment().local().format("YYYY-MM-DD HH:mm:ss")
+        };
+      }
+    }else{
+      let result = execSync(cmdStr);
+      let respArr = result.toString().split("\n");
+      respArr.forEach(element => {
+        if (element == null || element == "")
+          return;
+        let key = element.split('.')[0];
+        element = "http://www.thebutchart.cn/homepage/" + element;
+        resp[key] = element;
+      });
+      global.settings.homepage = {
+        mapping: resp,
+        date: moment().local().format("YYYY-MM-DD HH:mm:ss")
+      };
+    }
+
     cb(null, resp);
   }
 }
