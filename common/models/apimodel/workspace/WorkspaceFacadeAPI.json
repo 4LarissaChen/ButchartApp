@@ -225,6 +225,12 @@
       "principalId": "UserSelf",
       "permission": "ALLOW",
       "property": "getOpenIdByCode"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "getHomePagePics"
     }
   ],
   "methods": {},

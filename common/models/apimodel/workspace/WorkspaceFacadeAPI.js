@@ -10,6 +10,7 @@ var apiUtils = require('../../../../server/utils/apiUtils.js');
 var WechatPayService = require('./internalService/WechatPayService.js');
 var WorkspaceFacadeService = require("./internalService/WorkspaceFacadeService.js");
 var WechatPay = require('./internalService/WechatPay');
+var execSync = require('child_process').execSync;
 
 module.exports = function (WorkspaceFacadeAPI) {
   apiUtils.disableRelatedModelRemoteMethod(WorkspaceFacadeAPI);
@@ -597,5 +598,22 @@ module.exports = function (WorkspaceFacadeAPI) {
     }).catch(err => {
       cb(err, null);
     });
+  }
+
+  WorkspaceFacadeAPI.remoteMethod('getHomePagePics', {
+    description: "获取首页图片.",
+    returns: { arg: 'resp', type: ['string'], description: '', root: true },
+    http: { path: '/getHomePagePics', verb: 'get', status: 200, errorStatus: [500] }
+  });
+  WorkspaceFacadeAPI.getHomePagePics = function (cb) {
+    let cmdStr = "ls /opt/butchart/files/images/homepage";
+    let respArr = execSync(cmdStr).toString().split("\n");
+    let resp = [];
+    respArr.forEach(element => {
+      if (element && element != '')
+        element = "http://www.thebutchart.cn/homepage/" + element;
+      resp.push(element);
+    });
+    cb(null, resp);
   }
 }
