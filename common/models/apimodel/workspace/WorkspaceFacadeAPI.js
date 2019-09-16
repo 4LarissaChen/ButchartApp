@@ -610,8 +610,9 @@ module.exports = function (WorkspaceFacadeAPI) {
     let respArr = execSync(cmdStr).toString().split("\n");
     let resp = [];
     respArr.forEach(element => {
-      if (element && element != '')
-        element = "http://www.thebutchart.cn/homepage/" + element;
+      if (element == null || element == "")
+        return;
+      element = "http://www.thebutchart.cn/homepage/" + element;
       resp.push(element);
     });
     cb(null, { pics: resp });
