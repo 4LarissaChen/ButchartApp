@@ -642,6 +642,6 @@ module.exports = function (WorkspaceFacadeAPI) {
         date: moment().local().format("YYYY-MM-DD HH:mm:ss")
       };
     }
+    cb(null, resp);
   }
-  cb(null, resp);
 }
