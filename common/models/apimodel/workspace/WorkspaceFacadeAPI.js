@@ -602,46 +602,15 @@ module.exports = function (WorkspaceFacadeAPI) {
 
   WorkspaceFacadeAPI.remoteMethod('getHomePagePics', {
     description: "获取首页图片.",
-    returns: { arg: 'resp', type: ['string'], description: '', root: true },
+    returns: { arg: 'resp', type: 'object', description: '', root: true },
     http: { path: '/getHomePagePics', verb: 'get', status: 200, errorStatus: [500] }
   });
   WorkspaceFacadeAPI.getHomePagePics = function (cb) {
-    let cmdStr = "ls /opt/butchart/files/images/homepage";
-    let resp = {};
-    if (global.settings.homepage && global.settings.homepage.mapping && global.settings.homepage.date) {
-      let oldDate = moment(global.settings.homepage.date.split(' ')[0]);
-      let date = moment().local().format('YYYY-MM-DD HH:mm:ss').split(' ')[0];
-      if (moment(oldDate).add(1, 'd').dayOfYear() == moment(date).dayOfYear()) {
-        let result = execSync(cmdStr);
-        let respArr = result.toString().split("\n");
-        respArr.forEach(element => {
-          if (element == null || element == "")
-            return;
-          let key = element.split('.')[0];
-          element = "http://www.thebutchart.cn/homepage/" + element;
-          resp[key] = element;
-        });
-        global.settings.homepage = {
-          mapping: resp,
-          date: moment().local().format("YYYY-MM-DD HH:mm:ss")
-        };
-      } else
-        resp = global.settings.homepage.mapping;
-    } else {
-      let result = execSync(cmdStr);
-      let respArr = result.toString().split("\n");
-      respArr.forEach(element => {
-        if (element == null || element == "")
-          return;
-        let key = element.split('.')[0];
-        element = "http://www.thebutchart.cn/homepage/" + element;
-        resp[key] = element;
-      });
-      global.settings.homepage = {
-        mapping: resp,
-        date: moment().local().format("YYYY-MM-DD HH:mm:ss")
-      };
-    }
-    cb(null, resp);
+    var UserMicroService = loopback.findModel("UserMicroService");
+    UserMicroService.SystemAPI_getHomePagePics().then(result => {
+      cb(null, result.obj);
+    }).catch(err => {
+      cb(err, null);
+    });
   }
 }
