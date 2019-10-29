@@ -619,7 +619,7 @@ module.exports = function (WorkspaceFacadeAPI) {
   WorkspaceFacadeAPI.getHomePagePics = function (cb) {
     var UserMicroService = loopback.findModel("UserMicroService");
     UserMicroService.SystemAPI_getHomePagePics().then(result => {
-      cb(null, result.obj);
+      cb(null, result.obj.homePagePics);
     }).catch(err => {
       cb(err, null);
     });
