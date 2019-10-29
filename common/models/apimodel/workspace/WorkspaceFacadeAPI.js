@@ -119,8 +119,13 @@ module.exports = function (WorkspaceFacadeAPI) {
     }).then(result => {
       let transactions = result.obj;
       transactions.forEach(transaction => {
-        if (transaction.floristId)
-          transaction.floristName = florists.find(florist => florist.florist.userId == transaction.floristId).fullname;
+        if (transaction.floristId) {
+          let f = florists.find(florist => florist.florist.userId == transaction.floristId);
+          if (f)
+            transaction.floristName = f.fullname ? f.fullname : f._id;
+          else
+            transaction.floristName = null;
+        }
       });
       cb(null, transactions);
     }).catch(err => {
@@ -148,7 +153,10 @@ module.exports = function (WorkspaceFacadeAPI) {
       transactions.forEach(transaction => {
         if (transaction.floristId) {
           let f = florists.find(florist => florist.florist.userId == transaction.floristId);
-          transaction.floristName = f.fullname ? f.fullname : f._id;
+          if (f)
+            transaction.floristName = f.fullname ? f.fullname : f._id;
+          else
+            transaction.floristName = null;
         }
       });
       cb(null, transactions);
@@ -176,8 +184,11 @@ module.exports = function (WorkspaceFacadeAPI) {
       let transactions = result.obj;
       transactions.forEach(transaction => {
         if (transaction.floristId) {
-          let f = florists.find(florist => florist.florist.userId == transaction.floristId);;
-          transaction.floristName = f.fullname ? f.fullname : f._id;
+          let f = florists.find(florist => florist.florist.userId == transaction.floristId);
+          if (f)
+            transaction.floristName = f.fullname ? f.fullname : f._id;
+          else
+            transaction.floristName = null;
         }
       });
       cb(null, transactions);
