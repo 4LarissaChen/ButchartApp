@@ -3,6 +3,7 @@
     "loopback#favicon": {}
   },
   "initial": {
+    "./middleware/logRequest": {},
     "compression": {},
     "cors": {
       "params": {
@@ -43,9 +44,17 @@
   },
   "files": {},
   "final": {
-    "loopback#urlNotFound": {}
+    "./middleware/logError": {}
   },
   "final:after": {
-    "strong-error-handler": {}
+    "strong-error-handler": {
+      "param": {
+        "debug": true,
+        "log": true,
+        "safeFields": [
+          "errorCode"
+        ]
+      }
+    }
   }
 }
