@@ -11,6 +11,7 @@ var WechatPayService = require('./internalService/WechatPayService.js');
 var WorkspaceFacadeService = require("./internalService/WorkspaceFacadeService.js");
 var WechatPay = require('./internalService/WechatPay');
 var execSync = require('child_process').execSync;
+var logger = require('../../../../server/middleware/Winston');
 
 module.exports = function (WorkspaceFacadeAPI) {
   apiUtils.disableRelatedModelRemoteMethod(WorkspaceFacadeAPI);
@@ -98,6 +99,8 @@ module.exports = function (WorkspaceFacadeAPI) {
     }).then(() => {
       cb(null, { createdId: transactionId, resp: resp });
     }).catch(err => {
+      logger.error('ERROR', null, err);
+      logger.error('API Request %s %s Happen Error in Time %s', 'createTransaction', '/workspace/user/' + userId + '/createTransaction', moment().local().format('YYYY-MM-DD HH:mm:ss.sss'));
       cb(err, null);
     })
   }

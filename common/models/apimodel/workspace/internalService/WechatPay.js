@@ -6,6 +6,7 @@ var settings = JSON.parse(fs.readFileSync(global.appRoot + 'server/config.json')
 var crypto = require('crypto');
 var rp = require('request-promise');
 var moment = require('moment');
+var logger = require('../../../../../server/middleware/Winston');
 const tenpay = require('tenpay');
 const config = {
   appid: settings.appid,
@@ -22,7 +23,8 @@ class WechatPay {
     orderParams.productList.forEach(product => {
       body += product.name + " x " + product.quantity + "; ";
     })
-    return UserMicroService.UserAPI_getUserOpenId({userId: userId}).then(result => {
+    return UserMicroService.UserAPI_getUserOpenId({ userId: userId }).then(result => {
+      logger.info(JSON.stringify(result));
       return api.unifiedOrder({
         out_trade_no: transactionId,
         body: body,
@@ -30,6 +32,7 @@ class WechatPay {
         openid: result.obj.openId
       });
     }).then(result => {
+      logger.info(JSON.stringify(result));
       return api.getPayParamsByPrepay({
         prepay_id: result.prepay_id
       });
