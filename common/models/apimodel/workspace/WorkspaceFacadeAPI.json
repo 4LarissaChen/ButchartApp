@@ -231,6 +231,18 @@
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "getHomePagePics"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Florist",
+      "permission": "ALLOW",
+      "property": "addLogisticsInfo"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "Manager",
+      "permission": "ALLOW",
+      "property": "addLogisticsInfo"
     }
   ],
   "methods": {},
