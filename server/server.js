@@ -15,8 +15,8 @@ var WechatPay = require('../common/models/apimodel/workspace/internalService/Wec
 app.start = function () {
 
   var server = https.createServer({
-    key: fs.readFileSync(global.appRoot + '/2473055_www.thebutchart.cn.key'),
-    cert: fs.readFileSync(global.appRoot + '/2473055_www.thebutchart.cn.pem')
+    key: fs.readFileSync(global.appRoot + '/3159459__thebutchart.cn.key'),
+    cert: fs.readFileSync(global.appRoot + '/3159459__thebutchart.cn.pem')
   }, app);
 
   server.listen(app.get('port'), function () {
